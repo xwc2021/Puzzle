@@ -20,7 +20,8 @@ public class PuzzleBuilder : MonoBehaviour {
     [SerializeField]
     PuzzlePieceGroup puzzlePieceGroup;
 
-
+    [SerializeField]
+    PuzzlePiecePocket puzzlePiecePocket;
 
     // Use this for initialization
     void Awake () {
@@ -52,6 +53,7 @@ public class PuzzleBuilder : MonoBehaviour {
         }
 
         target.ReRangePiece(W, H);
+        target.SouffleToPocket(W, H, puzzlePiecePocket);
     }
 
     

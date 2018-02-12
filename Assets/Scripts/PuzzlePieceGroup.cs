@@ -58,6 +58,26 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return column + row * newColumnCount;
     }
 
+    public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)
+    {
+        var count = W * H * pieceCount;
+        var indexList = new List<int>();
+
+        for (var i = 0; i < count; ++i)
+            indexList.Add(i);
+
+        while (indexList.Count > 0)
+        {
+            int i = Random.Range(0, indexList.Count);
+            var removeIndex = indexList[i];
+            indexList.RemoveAt(i);
+            var nowPiece = map1D[removeIndex];
+            puzzlePiecePocket.AddToPocket(nowPiece);
+        }
+
+        
+    }
+
 
     public void ResetUV(Vector2 uvScaleFactor,Vector2 uvOffsetFactor)
     {

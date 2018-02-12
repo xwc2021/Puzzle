@@ -20,5 +20,11 @@ public class PuzzlePiece : MonoBehaviour {
         var render = GetComponent<Renderer>();
         render.material = m;
     }
-	
+
+    Vector3 oldScale;
+    public void SwithcScale(Vector3 scale)
+    {
+        oldScale = transform.localScale;
+        transform.localScale = scale;
+    }
 }

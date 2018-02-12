@@ -14,6 +14,6 @@ public class PuzzlePiecePocket : MonoBehaviour {
         var pTransform = p.transform;
         pTransform.parent=transform;
         pTransform.localPosition = nowPos;
-        pTransform.localScale = new Vector3(scale, scale, scale);
+        p.SwithcScale(new Vector3(scale, scale, scale));
     }
 }

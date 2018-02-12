@@ -40,6 +40,7 @@ public class PuzzleBuilder : MonoBehaviour {
        
     }
 
+    PuzzlePieceGroup target;
     public void Generate()
     {
         var startPos = transform.position;
@@ -50,18 +51,20 @@ public class PuzzleBuilder : MonoBehaviour {
 
         Vector3 scale = new Vector3(ratio / W, 1.0f, 1.0f / H);
         print(scale);
-        for (int x = 0; x < W; x++)
+
+        target=null;
+        for (int y = 0; y < H; y++) 
         {
-            for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
             {
-                Generate(startPos+x* offsetX+y* offsetY, scale);
+                Generate(startPos + x * offsetX + y * offsetY, scale, ref target);
             }
         }
     }
 
     
     Quaternion rot =Quaternion.Euler(90,180,0);
-    void Generate(Vector3 pos, Vector3 scale)
+    void Generate(Vector3 pos, Vector3 scale, ref PuzzlePieceGroup target)
     {
         var group =GameObject.Instantiate<PuzzlePieceGroup>(puzzlePieceGroup,pos,rot);
         group.transform.localScale = scale;
@@ -72,5 +75,10 @@ public class PuzzleBuilder : MonoBehaviour {
         {
             p.SetMaterial(m);
         }
+
+        if (target == null)
+            target = group; 
+        else
+            group.Give(target);
     }
 }

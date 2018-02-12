@@ -168,7 +168,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4050685638925216, guid: 31c113711e88d4e48a146156aac78c39, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 6.31
+      value: 6.35
       objectReference: {fileID: 0}
     - target: {fileID: 4050685638925216, guid: 31c113711e88d4e48a146156aac78c39, type: 2}
       propertyPath: m_LocalPosition.y
@@ -241,6 +241,7 @@ MonoBehaviour:
   url: https://drscdn.500px.org/photo/836088/m%3D900/v2?webp=true&sig=ffda7dab1a12e4da4d0f20ca5fe08434f6a5827be01a90ddcc091e15c1f905a6
   puzzleBuilder: {fileID: 236208357}
   screenAdapter: {fileID: 744463323}
+  puzzlePiecePocket: {fileID: 588731480}
 --- !u!23 &744463319
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -320,7 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc301079f6f758b4c972a146bcef0def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  percentage: 0.6
+  scale: 0.6
 --- !u!1 &1240867797
 GameObject:
   m_ObjectHideFlags: 0

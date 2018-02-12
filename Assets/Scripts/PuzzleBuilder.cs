@@ -6,8 +6,6 @@ public class PuzzleBuilder : MonoBehaviour {
 
     
 
-    const float UnitSize = 10;
-
     //分解成幾組
     [SerializeField]
     int W=1;
@@ -34,6 +32,7 @@ public class PuzzleBuilder : MonoBehaviour {
         var startPos = transform.position;
         var ImageScaleX = imgLoader.GetImageScaleX();
         var ImageScaleZ = imgLoader.GetImageScaleZ();
+        var UnitSize = ScreenAdapter.UnitSize;
 
         Vector3 offsetX = new Vector3(ImageScaleX * UnitSize / W, 0.0f, 0.0f);
         Vector3 offsetY = new Vector3(0.0f, ImageScaleZ*UnitSize / H, 0.0f);

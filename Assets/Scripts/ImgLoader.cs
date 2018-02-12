@@ -13,6 +13,9 @@ public class ImgLoader : MonoBehaviour {
     [SerializeField]
     ScreenAdapter screenAdapter;
 
+    [SerializeField]
+    PuzzlePiecePocket puzzlePiecePocket;
+
     float ratio;
     public float GetRatio() { return ratio; }
 
@@ -38,17 +41,19 @@ public class ImgLoader : MonoBehaviour {
             //print($"{tex.width},{tex.height}");
             m_Material.mainTexture = tex;
             ResetImageSize(tex.width, tex.height);
-            var scale =screenAdapter.GetScaleToFitScreen(this);
-            transform.localScale = transform.localScale * scale;
-
+            
             puzzleBuilder.Generate();
+            puzzlePiecePocket.SetPosition();
         } 
     }
 
     void ResetImageSize(float w,float h)
     {
         ratio = (float)w / h;
-        transform.localScale = new Vector3(ratio, 1, 1);   
+        transform.localScale = new Vector3(ratio, 1, 1);
+
+        var scale = screenAdapter.GetScaleToFitScreen(this);
+        transform.localScale = transform.localScale * scale;
     }
 
     public float GetImageScaleX() { return transform.localScale.x; }

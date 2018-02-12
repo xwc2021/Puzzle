@@ -16,4 +16,12 @@ public class PuzzlePiecePocket : MonoBehaviour {
         pTransform.localPosition = nowPos;
         p.SwithcScale(new Vector3(scale, scale, scale));
     }
+
+    public void SetPosition()
+    {
+        var offset = -1;
+        var pos = transform.position;
+        pos.Set(ScreenAdapter.GetHalfScreenWidth()+ offset, pos.y, pos.z);
+        transform.position = pos;
+    }
 }

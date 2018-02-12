@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class PuzzleBuilder : MonoBehaviour {
 
-    const int pieceCount = 24;
-    const int rowCount = 4;
-    const int columnCount = 6;
+    
 
     const float UnitSize = 10;
 
@@ -21,23 +19,12 @@ public class PuzzleBuilder : MonoBehaviour {
 
     [SerializeField]
     PuzzlePieceGroup puzzlePieceGroup;
-    public PuzzlePiece[] puzzlePieces;
 
-    PuzzlePiece GetPiece(int column,int row )
-    {
-        Debug.Assert(row < rowCount);
-        Debug.Assert(column < columnCount);
-
-        var index = column + row * columnCount;
-        return puzzlePieces[index];
-    }
 
 
     // Use this for initialization
     void Awake () {
-        //get 24 pieces
-        puzzlePieces=puzzlePieceGroup.GetComponentsInChildren<PuzzlePiece>();
-       
+
     }
 
     PuzzlePieceGroup target;
@@ -50,21 +37,24 @@ public class PuzzleBuilder : MonoBehaviour {
         Vector3 offsetY = new Vector3(0.0f, UnitSize / H, 0.0f);
 
         Vector3 scale = new Vector3(ratio / W, 1.0f, 1.0f / H);
-        print(scale);
+        Vector2 uvScaleFactor =new Vector2(1.0f / W,1.0f / H);
+        var uvOffsetX = 1.0f / W;
+        var uvOffsetY = 1.0f / H;
 
-        target=null;
+        target =null;
         for (int y = 0; y < H; y++) 
         {
             for (int x = 0; x < W; x++)
             {
-                Generate(startPos + x * offsetX + y * offsetY, scale, ref target);
+                var uvOffsetFactor = new Vector2(x * uvOffsetX, y * uvOffsetY);
+                Generate(startPos + x * offsetX + y * offsetY, scale, uvScaleFactor, uvOffsetFactor, ref target);
             }
         }
     }
 
     
     Quaternion rot =Quaternion.Euler(90,180,0);
-    void Generate(Vector3 pos, Vector3 scale, ref PuzzlePieceGroup target)
+    void Generate(Vector3 pos, Vector3 scale,Vector2 uvScaleFactor, Vector2 uvOffsetFactor, ref PuzzlePieceGroup target)
     {
         var group =GameObject.Instantiate<PuzzlePieceGroup>(puzzlePieceGroup,pos,rot);
         group.transform.localScale = scale;
@@ -75,6 +65,8 @@ public class PuzzleBuilder : MonoBehaviour {
         {
             p.SetMaterial(m);
         }
+
+        group.ResetUV(uvScaleFactor, uvOffsetFactor);
 
         if (target == null)
             target = group; 

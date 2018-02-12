@@ -10,6 +10,9 @@ public class ImgLoader : MonoBehaviour {
     [SerializeField]
     PuzzleBuilder puzzleBuilder;
 
+    [SerializeField]
+    ScreenAdapter screenAdapter;
+
     float ratio;
     public float GetRatio() { return ratio; }
 
@@ -35,6 +38,8 @@ public class ImgLoader : MonoBehaviour {
             //print($"{tex.width},{tex.height}");
             m_Material.mainTexture = tex;
             ResetImageSize(tex.width, tex.height);
+            var scale =screenAdapter.GetScaleToFitScreen(this);
+            transform.localScale = transform.localScale * scale;
 
             puzzleBuilder.Generate();
         } 
@@ -45,4 +50,7 @@ public class ImgLoader : MonoBehaviour {
         ratio = (float)w / h;
         transform.localScale = new Vector3(ratio, 1, 1);   
     }
+
+    public float GetImageScaleX() { return transform.localScale.x; }
+    public float GetImageScaleZ() { return transform.localScale.z; }
 }

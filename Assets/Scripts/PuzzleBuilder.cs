@@ -50,6 +50,8 @@ public class PuzzleBuilder : MonoBehaviour {
                 Generate(startPos + x * offsetX + y * offsetY, scale, uvScaleFactor, uvOffsetFactor, ref target);
             }
         }
+
+        target.ReRangePiece(W, H);
     }
 
     

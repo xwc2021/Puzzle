@@ -13,13 +13,12 @@ public class PuzzlePiece : MonoBehaviour
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
-    Transform group;
-    Transform GetGroupTransform()
-    {
-        if(group==null)
-            group=transform.parent;
+    PuzzlePieceGroup group;
+    public void SetGroup(PuzzlePieceGroup group) { this.group = group; }
 
-        return group;
+    Transform GetParentTransform()
+    {
+        return transform.parent;
     }
 
     Vector3 oldLocalPos;
@@ -45,39 +44,43 @@ public class PuzzlePiece : MonoBehaviour
         var delta = (Input.mousePosition - beginDragPos);
         delta = ScreenVectorToWorld(delta);
 
-        var localDelta = GetGroupTransform().InverseTransformVector(delta);
+        var localDelta = GetParentTransform().InverseTransformVector(delta);
         //print(localDelta);
         transform.localPosition = oldLocalPos + localDelta;
 
-        var nowX = transform.localPosition.x;
-        if (nowX > pocket.GetBorder())//臨界點
+        var nowX = transform.position.x;
+        if (nowX < pocket.GetBorder())//臨界點
         {
             if (inPocket)
                 pocket.RemoveFromPocket(this);
-
         }
         else
         {
-            var nowZ = transform.localPosition.z;
-            var nowIndex = pocket.GetInsertIndex(nowZ);
+            //轉換回Pocket的local space
+            var pos = transform.position;
+            pos = pocket.transform.InverseTransformPoint(pos);
+            var localZ = pos.z;
+
+            var nowIndex = pocket.GetInsertIndex(localZ);
             print(nowIndex);
-            if (!inPocket)//不再口袋裡，就加進去
+            if (!inPocket)//不在口袋裡，就加進去
             {
-                pocket.AddToPocket(nowIndex, this);
+                pocket.AddToPocket(nowIndex, this,false);
             }
             else
             {
                 if(nowIndexInPocket!= nowIndex)
-                    pocket.SwapInPocket(nowIndexInPocket, nowIndex);
+                    pocket.SwapInPocket(nowIndexInPocket, nowIndex);//交換
             }
-            
-        }
-            
+        }    
     }
 
     void OnMouseUp()
     {
-        pocket.RefreshPocket();
+        if (inPocket)
+            pocket.RefreshPocket();//重新對齊
+        else
+            transform.parent = group.transform;//放回group
     }
 
     //Just For Debug

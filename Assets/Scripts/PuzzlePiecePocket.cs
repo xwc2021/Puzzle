@@ -7,7 +7,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
     [SerializeField]
     Transform border;
 
-    public float GetBorder() { return border.localPosition.x; }
+    public float GetBorder() { return border.position.x; }
 
     [SerializeField]
     StickOn stickOn;
@@ -16,14 +16,17 @@ public class PuzzlePiecePocket : MonoBehaviour {
     Vector3 nowPos = Vector3.zero;
     const float span = 1.5f;
     Vector3 spanV3 = new Vector3(0,0, span);
-    public void AddToPocket(int index,PuzzlePiece p)
+    public void AddToPocket(int index,PuzzlePiece p,bool attach)
     {
         if (pieceList.Contains(p))
             return;
 
         //attach & scale
-        var pTransform = p.transform;
-        pTransform.parent=transform;
+        if (attach)
+        {
+            var pTransform = p.transform;
+            pTransform.parent = transform;
+        }
         p.SetScaleInPocket(new Vector3(scale, scale, scale));
 
         pieceList.Insert(index,p);
@@ -34,6 +37,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         RefreshPocket();
     }
 
+    //交換
     public void SwapInPocket(int a, int b)
     {
         var target = pieceList[b];
@@ -56,7 +60,8 @@ public class PuzzlePiecePocket : MonoBehaviour {
 
         pieceList.Remove(p);
         p.SetInPucket(false);
-        p.ResetScale();
+        p.SetInPucket(false);
+        p.SetInPucketIndex(-1);
         //print(pieceList.Count);
         RefreshPocket();
     }

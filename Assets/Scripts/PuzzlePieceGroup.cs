@@ -135,7 +135,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
             var removeIndex = indexList[i];
             indexList.RemoveAt(i);
             var nowPiece = map1D[removeIndex];
-            puzzlePiecePocket.AddToPocket(0,nowPiece);
+            puzzlePiecePocket.AddToPocket(0,nowPiece,true);
         } 
     }
 
@@ -149,16 +149,21 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
     public void Give(PuzzlePieceGroup target)
     {
-        var targetTransform =target.transform;
+        //綁定Group
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        foreach (var p in pieces)
+            p.SetGroup(target);
 
-        var pieces = GetComponentsInChildren<Transform>();
-        for (var i = 0; i < pieces.Length; i++)
+        //轉移Child
+        var targetTransform =target.transform;
+        var transforms = GetComponentsInChildren<Transform>();
+        for (var i = 0; i < transforms.Length; i++)
         {
-            var p = pieces[i];
+            var t = transforms[i];
 
             //排除自己
-            if(p!=transform)
-                p.parent = targetTransform;
+            if (t!=transform)
+                t.parent = targetTransform;
         }
 
         Destroy(gameObject);

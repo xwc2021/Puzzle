@@ -140,8 +140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7158324dfa2ac634a9788dea961ae3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  W: 2
-  H: 3
+  W: 1
+  H: 1
   imgLoader: {fileID: 744463318}
   puzzlePieceGroup: {fileID: 114052932814738138, guid: 8f2ed6ef5060d4341a7d6dcd06561121,
     type: 2}
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9c61abdc4221d3428ce60d32a65c1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://i0.wp.com/img.apoarea.tw/pixnet/52f45d4e04505467c26b2752797bbdff.jpg
+  url: https://cdn2.ettoday.net/images/2613/e2613702.jpg
   puzzleBuilder: {fileID: 236208357}
   screenAdapter: {fileID: 744463323}
   puzzlePiecePocket: {fileID: 588731480}

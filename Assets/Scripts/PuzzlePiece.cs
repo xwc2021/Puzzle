@@ -80,7 +80,11 @@ public class PuzzlePiece : MonoBehaviour
     void OnMouseUp()
     {
         if (inPocket)
+        {
+            transform.parent = pocket.transform;
             pocket.RefreshPocket();//重新對齊
+        }
+            
         else
             transform.parent = group.transform;//放回group
     }

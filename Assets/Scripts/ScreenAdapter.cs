@@ -23,6 +23,7 @@ public class ScreenAdapter : MonoBehaviour {
         return (float)Screen.width / Screen.height;
     }
 
+    //其實這就是CameraSize的2倍
     public static float UnitSize = 10;
 
     public static float GetHalfScreenWidth()

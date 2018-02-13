@@ -9,7 +9,6 @@ public class ScreenAdapter : MonoBehaviour {
 
     public float GetScaleToFitScreen(ImgLoader imgLoader)
     {
-
         var imgRatio =imgLoader.GetRatio();
         var screenRatio = GetScreenRatio();
 

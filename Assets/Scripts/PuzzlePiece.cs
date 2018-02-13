@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuzzlePiece : MonoBehaviour {
+public class PuzzlePiece : MonoBehaviour
+{
+    float hMin;
+    public void ResetSize(float hMin)
+    {
+        this.hMin = hMin;
+    }
 
     public void ResetUV (Vector2 uvScaleFactor, Vector2 uvOffsetFactor) {
         var mesh = GetComponent<MeshFilter>().mesh;
@@ -26,5 +32,11 @@ public class PuzzlePiece : MonoBehaviour {
     {
         oldScale = transform.localScale;
         transform.localScale = scale;
+    }
+
+    private void Update()
+    {
+        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.up);
+        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.left);
     }
 }

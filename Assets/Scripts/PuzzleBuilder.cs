@@ -53,6 +53,7 @@ public class PuzzleBuilder : MonoBehaviour {
         }
 
         target.ReRangePiece(W, H);
+        target.ResetPieceSize(W, H, ImageScaleX, ImageScaleZ);
         target.SouffleToPocket(W, H, puzzlePiecePocket);
     }
 

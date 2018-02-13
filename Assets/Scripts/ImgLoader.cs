@@ -49,9 +49,11 @@ public class ImgLoader : MonoBehaviour {
 
     void ResetImageSize(float w,float h)
     {
+        //先把mesh縮放到圖片的長寬比
         ratio = (float)w / h;
         transform.localScale = new Vector3(ratio, 1, 1);
 
+        //有可能圖片大於銀幕，所以要再調整一次
         var scale = screenAdapter.GetScaleToFitScreen(this);
         transform.localScale = transform.localScale * scale;
     }

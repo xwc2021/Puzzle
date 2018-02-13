@@ -58,6 +58,20 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return column + row * newColumnCount;
     }
 
+    public void ResetPieceSize(int W, int H,float ImageScaleX,float ImageScaleZ)
+    {
+        newColumnCount = W * columnCount;
+        newRowCount = H * rowCount;
+
+        var hWidth = 0.5f* ImageScaleX*ScreenAdapter.UnitSize/ newColumnCount;
+        var hHeight = 0.5f * ImageScaleZ* ScreenAdapter.UnitSize / newRowCount;
+        var hMin = Mathf.Min(hWidth, hHeight);
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        
+        foreach (var p in pieces)
+            p.ResetSize(hMin);
+    }
+
     public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)
     {
         var count = W * H * pieceCount;
@@ -73,9 +87,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
             indexList.RemoveAt(i);
             var nowPiece = map1D[removeIndex];
             puzzlePiecePocket.AddToPocket(nowPiece);
-        }
-
-        
+        } 
     }
 
 

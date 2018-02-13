@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
 {
-    float hMin;
-    public void ResetSize(float hMin)
+    //Just For Debug
+    public float hWidth;
+    public float hHeight;
+    public void ResetSize(float hWidth, float hHeight)
     {
-        this.hMin = hMin;
+        this.hWidth = hWidth;
+        this.hHeight = hHeight;
     }
 
     public void ResetUV (Vector2 uvScaleFactor, Vector2 uvOffsetFactor) {
@@ -36,7 +39,7 @@ public class PuzzlePiece : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.up,Color.yellow);
-        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.left, Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + hHeight * Vector3.up,Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
     }
 }

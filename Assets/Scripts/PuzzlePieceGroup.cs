@@ -73,11 +73,10 @@ public class PuzzlePieceGroup : MonoBehaviour {
         pieceHeight =  ImageScaleZ* ScreenAdapter.UnitSize / newRowCount;
         hPieceWidth = 0.5f * pieceWidth;
         hPieceHeight = 0.5f * pieceHeight;
-        var hMin = Mathf.Min(hPieceWidth, hPieceHeight);
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         
         foreach (var p in pieces)
-            p.ResetSize(hMin);
+            p.ResetSize(hPieceWidth, hPieceHeight);
     }
 
     public Vector3[] pos1D;

@@ -19,6 +19,9 @@ public class PuzzleBuilder : MonoBehaviour {
     PuzzlePieceGroup puzzlePieceGroup;
 
     [SerializeField]
+    PuzzlePieceGroup target;
+
+    [SerializeField]
     PuzzlePiecePocket puzzlePiecePocket;
 
     // Use this for initialization
@@ -26,7 +29,6 @@ public class PuzzleBuilder : MonoBehaviour {
 
     }
 
-    PuzzlePieceGroup target;
     public void Generate()
     {
         var startPos = transform.position;
@@ -42,7 +44,6 @@ public class PuzzleBuilder : MonoBehaviour {
         var uvOffsetX = 1.0f / W;
         var uvOffsetY = 1.0f / H;
 
-        target =null;
         for (int y = 0; y < H; y++) 
         {
             for (int x = 0; x < W; x++)
@@ -54,7 +55,8 @@ public class PuzzleBuilder : MonoBehaviour {
 
         target.ReRangePiece(W, H);
         target.ResetPieceSize(W, H, ImageScaleX, ImageScaleZ);
-        target.SouffleToPocket(W, H, puzzlePiecePocket);
+        target.RecordPositionBeforeSouffleToPocket(W, H);
+        //target.SouffleToPocket(W, H, puzzlePiecePocket);
     }
 
     
@@ -73,9 +75,6 @@ public class PuzzleBuilder : MonoBehaviour {
 
         group.ResetUV(uvScaleFactor, uvOffsetFactor);
 
-        if (target == null)
-            target = group; 
-        else
-            group.Give(target);
+        group.Give(target);
     }
 }

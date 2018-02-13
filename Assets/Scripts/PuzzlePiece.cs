@@ -36,7 +36,7 @@ public class PuzzlePiece : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.up);
-        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.left);
+        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.up,Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + hMin * Vector3.left, Color.yellow);
     }
 }

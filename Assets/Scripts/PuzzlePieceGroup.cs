@@ -39,6 +39,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
                         var newIndex = GetNewIndex(nX, nY);
                         //print(nX + "," + nY);
                         map1D[newIndex] = pieces[index];
+                        map1D[newIndex].name = "("+nX + "," + nY+")";//rename
                     }
                 }
                 ++group;//走完24片
@@ -58,18 +59,69 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return column + row * newColumnCount;
     }
 
+    float pieceWidth;
+    float pieceHeight;
+    float hPieceWidth;
+    float hPieceHeight;
+
     public void ResetPieceSize(int W, int H,float ImageScaleX,float ImageScaleZ)
     {
         newColumnCount = W * columnCount;
         newRowCount = H * rowCount;
 
-        var hWidth = 0.5f* ImageScaleX*ScreenAdapter.UnitSize/ newColumnCount;
-        var hHeight = 0.5f * ImageScaleZ* ScreenAdapter.UnitSize / newRowCount;
-        var hMin = Mathf.Min(hWidth, hHeight);
+        pieceWidth =  ImageScaleX*ScreenAdapter.UnitSize/ newColumnCount;
+        pieceHeight =  ImageScaleZ* ScreenAdapter.UnitSize / newRowCount;
+        hPieceWidth = 0.5f * pieceWidth;
+        hPieceHeight = 0.5f * pieceHeight;
+        var hMin = Mathf.Min(hPieceWidth, hPieceHeight);
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         
         foreach (var p in pieces)
             p.ResetSize(hMin);
+    }
+
+    public Vector3[] pos1D;
+    public void RecordPositionBeforeSouffleToPocket(int W,int H)
+    {
+        var count = W * H * pieceCount;
+        pos1D = new Vector3[count] ;
+
+        for (var i = 0; i < map1D.Length; ++i)
+            pos1D[i] = map1D[i].transform.localPosition;
+
+        
+    }
+
+    //找出位在那個小格
+    int GetIndexOfCell(float x,float cell)
+    {
+        return (int)((x - (x % cell)) / cell);
+    }
+
+    //因為拼圖的模型是從3D建模軟體來的
+    //所以每片貼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
+    //可以透過pos1D取到每片貼圖真正的中心位置
+    public Vector3 GetAlighPiecePos(float x,float z)
+    {
+        var xIndex =GetIndexOfCell(x, -pieceWidth);
+        var zIndex = GetIndexOfCell(z, -pieceHeight);
+
+        xIndex=Mathf.Clamp(xIndex, 0, newColumnCount - 1);
+        zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
+
+        print(xIndex + "," + zIndex);
+        var i = GetNewIndex(xIndex, zIndex);
+        return pos1D[i];
+    }
+
+    private void Update()
+    {
+        //Testing
+        if (map1D.Length == 0)
+            return;
+        var element =map1D[GetNewIndex(6, 11)];
+        var test= element.transform.localPosition;
+        GetAlighPiecePos(test.x, test.z);
     }
 
     public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)

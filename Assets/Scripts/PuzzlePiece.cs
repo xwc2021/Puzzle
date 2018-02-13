@@ -14,7 +14,9 @@ public class PuzzlePiece : MonoBehaviour
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
     PuzzlePieceGroup group;
-    public void SetGroup(PuzzlePieceGroup group) { this.group = group; }
+    public void SetGroup(PuzzlePieceGroup group) {
+        this.group = group;
+    }
 
     Transform GetParentTransform()
     {
@@ -110,9 +112,10 @@ public class PuzzlePiece : MonoBehaviour
     }
 
     Vector3 oldScale;
+    public void MemoryOldScale (){ oldScale = transform.localScale; }
+
     public void SetScaleInPocket(Vector3 scale)
     {
-        oldScale = transform.localScale;
         transform.localScale = scale;
     }
     public void ResetScale()

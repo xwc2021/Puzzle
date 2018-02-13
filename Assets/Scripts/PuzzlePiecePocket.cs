@@ -62,6 +62,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         p.SetInPucket(false);
         p.SetInPucket(false);
         p.SetInPucketIndex(-1);
+        p.ResetScale();
         //print(pieceList.Count);
         RefreshPocket();
     }

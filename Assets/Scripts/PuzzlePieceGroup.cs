@@ -166,6 +166,10 @@ public class PuzzlePieceGroup : MonoBehaviour {
                 t.parent = targetTransform;
         }
 
+        //記下Scale(因為進Pocket會改變Scale)
+        foreach (var p in pieces)
+            p.MemoryOldScale();
+
         Destroy(gameObject);
     }
 }

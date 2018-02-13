@@ -21,19 +21,18 @@ public class PuzzlePiecePocket : MonoBehaviour {
         if (pieceList.Contains(p))
             return;
 
-        //attach & scale
+        //attach
         if (attach)
         {
             var pTransform = p.transform;
             pTransform.parent = transform;
         }
-        p.SetScaleInPocket(new Vector3(scale, scale, scale));
-
+        
         pieceList.Insert(index,p);
         p.SetPocket(this);
         p.SetInPucket(true);
+        p.SetScaleInPocket(new Vector3(scale, scale, scale));
 
-        //print(pieceList.Count);
         RefreshPocket();
     }
 
@@ -43,6 +42,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         var target = pieceList[b];
         pieceList.Remove(target);
         pieceList.Insert(a, target);
+
         RefreshPocket();
     }
 
@@ -60,10 +60,9 @@ public class PuzzlePiecePocket : MonoBehaviour {
 
         pieceList.Remove(p);
         p.SetInPucket(false);
-        p.SetInPucket(false);
         p.SetInPucketIndex(-1);
         p.ResetScale();
-        //print(pieceList.Count);
+
         RefreshPocket();
     }
 
@@ -76,8 +75,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
             var p = pieceList[i];
             p.transform.localPosition = nowPos;
             p.SetInPucketIndex(i);
-        }
-            
+        }   
     }
 
     List<PuzzlePiece> pieceList;

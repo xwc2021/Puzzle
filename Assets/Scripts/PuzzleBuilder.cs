@@ -22,6 +22,9 @@ public class PuzzleBuilder : MonoBehaviour {
     PuzzlePieceGroup target;
 
     [SerializeField]
+    Transform helpCorner;
+
+    [SerializeField]
     PuzzlePiecePocket puzzlePiecePocket;
 
     // Use this for initialization
@@ -53,9 +56,11 @@ public class PuzzleBuilder : MonoBehaviour {
             }
         }
 
+        //一些前置作業
         target.ReRangePiece(W, H);
         target.ResetPieceSize(W, H, ImageScaleX, ImageScaleZ);
         target.RecordPositionBeforeSouffleToPocket(W, H);
+        target.transform.position = helpCorner.position;
         //target.SouffleToPocket(W, H, puzzlePiecePocket);
     }
 
@@ -70,7 +75,7 @@ public class PuzzleBuilder : MonoBehaviour {
         var pieces =group.GetComponentsInChildren<PuzzlePiece>();
         foreach (var p in pieces)
         {
-            p.SetMaterial(m);
+            p.SetMainTextrue(m);
         }
 
         group.ResetUV(uvScaleFactor, uvOffsetFactor);

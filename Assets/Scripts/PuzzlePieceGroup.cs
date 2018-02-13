@@ -99,8 +99,8 @@ public class PuzzlePieceGroup : MonoBehaviour {
     }
 
     //因為拼圖的模型是從3D建模軟體來的
-    //所以每片貼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
-    //可以透過pos1D取到每片貼圖真正的中心位置
+    //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
+    //可以透過pos1D取到每片拼圖真正的中心位置
     public Vector3 GetAlighPiecePos(float x,float z)
     {
         var xIndex =GetIndexOfCell(x, -pieceWidth);
@@ -109,7 +109,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         xIndex=Mathf.Clamp(xIndex, 0, newColumnCount - 1);
         zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
 
-        print(xIndex + "," + zIndex);
+        //print(xIndex + "," + zIndex);
         var i = GetNewIndex(xIndex, zIndex);
         return pos1D[i];
     }

@@ -21,10 +21,10 @@ public class PuzzlePiece : MonoBehaviour
         mesh.uv = uvs;
     }
 
-    public void SetMaterial(Material m)
+    public void SetMainTextrue(Material m)
     {
         var render = GetComponent<Renderer>();
-        render.material = m;
+        render.material.mainTexture = m.mainTexture;
     }
 
     Vector3 oldScale;

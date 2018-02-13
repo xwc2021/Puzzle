@@ -146,6 +146,7 @@ MonoBehaviour:
   puzzlePieceGroup: {fileID: 114052932814738138, guid: 8f2ed6ef5060d4341a7d6dcd06561121,
     type: 2}
   target: {fileID: 1418477620}
+  helpCorner: {fileID: 826004116}
   puzzlePiecePocket: {fileID: 588731480}
 --- !u!4 &236208358
 Transform:
@@ -250,7 +251,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 744463317}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 0
@@ -258,7 +259,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: ecf7b33b2b4b0684eb70832c3c76a492, type: 2}
+  - {fileID: 2100000, guid: 2245897699da9ab4ca18691b3a57d216, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -308,7 +309,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 826004116}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
@@ -324,6 +326,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scale: 0.8
+--- !u!1 &826004115
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 826004116}
+  m_Layer: 0
+  m_Name: HelpCorner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &826004116
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 826004115}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5, y: 0, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 744463322}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1240867797
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,7 +442,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4050685638925216, guid: 31c113711e88d4e48a146156aac78c39, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -5.14
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 4050685638925216, guid: 31c113711e88d4e48a146156aac78c39, type: 2}
       propertyPath: m_LocalPosition.y

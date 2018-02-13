@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9c61abdc4221d3428ce60d32a65c1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://cdn2.ettoday.net/images/2613/e2613702.jpg
+  url: http://clipart-library.com/images/rijrdopBT.jpg
   puzzleBuilder: {fileID: 236208357}
   screenAdapter: {fileID: 744463323}
   puzzlePiecePocket: {fileID: 588731480}

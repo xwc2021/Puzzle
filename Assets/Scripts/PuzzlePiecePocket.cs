@@ -46,7 +46,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         RefreshPocket();
     }
 
-    public int GetInsertIndex(float y)
+    public int GetInsertIndex(float y,bool inPocket)
     {
         //拼圖  y    y-hSpan (y向下為+)
         //      一
@@ -56,7 +56,8 @@ public class PuzzlePiecePocket : MonoBehaviour {
         //口    一     I span
         var hSpan = 0.5f * span;
         var yIndex =Tool.GetIndexOfCell(y- hSpan, span);
-        yIndex = Mathf.Clamp(yIndex, 0, pieceList.Count - 1);
+        //如果本來不在Pocket裡，可以放到尾巴，所以會多1個位置可放
+        yIndex = Mathf.Clamp(yIndex, 0, inPocket ? pieceList.Count - 1 : pieceList.Count);
         return yIndex;
     }
 

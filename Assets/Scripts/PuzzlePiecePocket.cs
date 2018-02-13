@@ -48,7 +48,14 @@ public class PuzzlePiecePocket : MonoBehaviour {
 
     public int GetInsertIndex(float y)
     {
-        var yIndex =Tool.GetIndexOfCell(y, span);
+        //拼圖  y    y-hSpan (y向下為+)
+        //      一
+        //       I    一
+        //口    一     I span
+        //       I    一
+        //口    一     I span
+        var hSpan = 0.5f * span;
+        var yIndex =Tool.GetIndexOfCell(y- hSpan, span);
         yIndex = Mathf.Clamp(yIndex, 0, pieceList.Count - 1);
         return yIndex;
     }

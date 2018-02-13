@@ -91,19 +91,13 @@ public class PuzzlePieceGroup : MonoBehaviour {
         
     }
 
-    //找出位在那個小格
-    int GetIndexOfCell(float x,float cell)
-    {
-        return (int)((x - (x % cell)) / cell);
-    }
-
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
     public Vector3 GetAlighPiecePos(float x,float z)
     {
-        var xIndex =GetIndexOfCell(x, -pieceWidth);
-        var zIndex = GetIndexOfCell(z, -pieceHeight);
+        var xIndex =Tool.GetIndexOfCell(x, -pieceWidth);
+        var zIndex = Tool.GetIndexOfCell(z, -pieceHeight);
 
         xIndex=Mathf.Clamp(xIndex, 0, newColumnCount - 1);
         zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
@@ -115,14 +109,14 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
     private void Update()
     {
-        GetAlighPiecePos();
+        Test_GetAlighPiecePos(0,0);
     }
 
-    void GetAlighPiecePos()
+    void Test_GetAlighPiecePos(int x,int y)
     {
         if (map1D.Length == 0)
             return;
-        var element = map1D[GetNewIndex(6, 11)];
+        var element = map1D[GetNewIndex(x, y)];
         var test = element.transform.localPosition;
         GetAlighPiecePos(test.x, test.z);
     }
@@ -141,7 +135,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
             var removeIndex = indexList[i];
             indexList.RemoveAt(i);
             var nowPiece = map1D[removeIndex];
-            puzzlePiecePocket.AddToPocket(nowPiece);
+            puzzlePiecePocket.AddToPocket(0,nowPiece);
         } 
     }
 

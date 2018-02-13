@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
 {
+    int nowIndexInPocket=-1;
+    public void SetInPucketIndex(int nowIndexInPocket) { this.nowIndexInPocket = nowIndexInPocket; }
+
+    bool inPocket = false;
+    public void SetInPucket(bool inPocket) { this.inPocket = inPocket; }
+
+    PuzzlePiecePocket pocket;
+    public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
+
     Transform group;
     Transform GetGroupTransform()
     {
@@ -37,8 +46,38 @@ public class PuzzlePiece : MonoBehaviour
         delta = ScreenVectorToWorld(delta);
 
         var localDelta = GetGroupTransform().InverseTransformVector(delta);
-        print(localDelta);
+        //print(localDelta);
         transform.localPosition = oldLocalPos + localDelta;
+
+        var nowX = transform.localPosition.x;
+        if (nowX > pocket.GetBorder())//臨界點
+        {
+            if (inPocket)
+                pocket.RemoveFromPocket(this);
+
+        }
+        else
+        {
+            var nowZ = transform.localPosition.z;
+            var nowIndex = pocket.GetInsertIndex(nowZ);
+            print(nowIndex);
+            if (!inPocket)//不再口袋裡，就加進去
+            {
+                pocket.AddToPocket(nowIndex, this);
+            }
+            else
+            {
+                if(nowIndexInPocket!= nowIndex)
+                    pocket.SwapInPocket(nowIndexInPocket, nowIndex);
+            }
+            
+        }
+            
+    }
+
+    void OnMouseUp()
+    {
+        pocket.RefreshPocket();
     }
 
     //Just For Debug
@@ -68,10 +107,14 @@ public class PuzzlePiece : MonoBehaviour
     }
 
     Vector3 oldScale;
-    public void SwithcScale(Vector3 scale)
+    public void SetScaleInPocket(Vector3 scale)
     {
         oldScale = transform.localScale;
         transform.localScale = scale;
+    }
+    public void ResetScale()
+    {
+        transform.localScale = oldScale;
     }
 
     private void Update()

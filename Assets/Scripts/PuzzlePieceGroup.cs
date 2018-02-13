@@ -115,11 +115,15 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
     private void Update()
     {
-        //Testing
+        GetAlighPiecePos();
+    }
+
+    void GetAlighPiecePos()
+    {
         if (map1D.Length == 0)
             return;
-        var element =map1D[GetNewIndex(6, 11)];
-        var test= element.transform.localPosition;
+        var element = map1D[GetNewIndex(6, 11)];
+        var test = element.transform.localPosition;
         GetAlighPiecePos(test.x, test.z);
     }
 

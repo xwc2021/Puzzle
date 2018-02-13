@@ -61,7 +61,7 @@ public class PuzzleBuilder : MonoBehaviour {
         target.ResetPieceSize(W, H, ImageScaleX, ImageScaleZ);
         target.RecordPositionBeforeSouffleToPocket(W, H);
         target.transform.position = helpCorner.position;
-        //target.SouffleToPocket(W, H, puzzlePiecePocket);
+        target.SouffleToPocket(W, H, puzzlePiecePocket);
     }
 
     

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PuzzlePiecePocket : MonoBehaviour {
 
+    [SerializeField]
+    StickOn stickOn;
+
     float scale = 0.35f;
     Vector3 nowPos = Vector3.zero;
     Vector3 span = new Vector3(0,0,1.5f);
@@ -23,5 +26,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         var pos = transform.position;
         pos.Set(ScreenAdapter.GetHalfScreenWidth()+ offset, pos.y, pos.z);
         transform.position = pos;
+
+        stickOn.BeginStickOn();
     }
 }

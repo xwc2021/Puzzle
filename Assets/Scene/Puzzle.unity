@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9c61abdc4221d3428ce60d32a65c1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: http://clipart-library.com/images/rijrdopBT.jpg
+  url: https://s.yimg.com/wb/images/571492ED02A92F1DE4A6A2373A97F79849D10C7E
   puzzleBuilder: {fileID: 236208357}
   screenAdapter: {fileID: 744463323}
   puzzlePiecePocket: {fileID: 588731480}

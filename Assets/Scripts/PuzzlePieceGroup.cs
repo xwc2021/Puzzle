@@ -156,6 +156,9 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
     public void ClearBucket(int bucketIndex, PuzzlePiece p)
     {
+        if (bucketIndex == Tool.NullIndex)
+            return;
+
         buckets[bucketIndex].Remove(p);
         p.SetBucketIndex(Tool.NullIndex);
     }

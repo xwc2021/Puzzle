@@ -4,22 +4,22 @@ using UnityEngine;
 
 class PuzzleBucket
 {
-    List<PuzzlePiece>list = new List<PuzzlePiece>();
+    List<Transform> list = new List<Transform>();
     float depth=0;
     float span = 1;
 
-    public void Add(PuzzlePiece p)
+    public void Add(Transform t)
     {
-        var localPos =p.transform.localPosition;
-        p.transform.localPosition = new Vector3(localPos.x, depth, localPos.z); 
-        list.Add(p);
+        var localPos =t.localPosition;
+        t.localPosition = new Vector3(localPos.x, depth, localPos.z); 
+        list.Add(t);
 
         depth += span;
     }
 
-    public void Remove(PuzzlePiece p)
+    public void Remove(Transform t)
     {
-        list.Remove(p);
+        list.Remove(t);
         depth -= span;
     }
 }
@@ -63,8 +63,11 @@ public class PuzzlePieceGroup : MonoBehaviour {
                         var nY = y + h * rowCount;
                         var newIndex = GetNewIndex(nX, nY);
                         //print(nX + "," + nY);
-                        map1D[newIndex] = pieces[index];
-                        map1D[newIndex].name = "("+nX + "," + nY+")";//rename
+                        var nowPiece = map1D[newIndex] = pieces[index];
+                        nowPiece.name = "("+nX + "," + nY+")";//rename
+                        nowPiece.xIndexInGroup = nX;
+                        nowPiece.yIndexInGroup = nY;
+
                     }
                 }
                 ++group;//走完24片
@@ -97,6 +100,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
                     temp.Add(new Vector2(0, 1));
 
                 p.NeighborOffset = temp.ToArray();
+                p.isConnected = new bool[temp.Count];
             }
         }
     }
@@ -184,10 +188,10 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
         //移出桶子
         if(bucketIndex!=Tool.NullIndex)
-            buckets[bucketIndex].Remove(p);
+            buckets[bucketIndex].Remove(p.transform);
 
         //放到桶子裡
-        buckets[newIndex].Add(p);
+        buckets[newIndex].Add(p.transform);
         return newIndex;
     }
 
@@ -196,7 +200,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         if (bucketIndex == Tool.NullIndex)
             return;
 
-        buckets[bucketIndex].Remove(p);
+        buckets[bucketIndex].Remove(p.transform);
         p.bucketIndex=Tool.NullIndex;
     }
 

@@ -4,12 +4,69 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
 {
+    public int xIndexInGroup;
+    public int yIndexInGroup;
 
+    //鄰接資訊
     public Vector2[] NeighborOffset;
+    public bool[] isConnected;
 
     public int bucketIndex= Tool.NullIndex;
     public int nowIndexInPocket = Tool.NullIndex;
     public bool inPocket = false;
+
+    bool IsMyNeighbor(int x, int y, PuzzlePiece p)
+    {
+        var b1=p.xIndexInGroup == (xIndexInGroup + x);
+        var b2 = p.yIndexInGroup == (yIndexInGroup + y);
+        return b1 && b2; 
+    }
+
+    public List<PuzzlePiece> ConnectedGroup;
+
+
+    void ConnetPiece(PuzzlePiece p)
+    {
+        var you = p;
+        var me = this;
+        var IamSingle = ConnectedGroup == null;
+        var YouAreSingle = you.ConnectedGroup == null;
+
+        //孤單的兩塊，彼此相遇了
+        if (IamSingle && YouAreSingle)
+        {
+            ConnectedGroup = new List<PuzzlePiece>();
+            ConnectedGroup.Add(me);
+            ConnectedGroup.Add(you);
+            you.ConnectedGroup = ConnectedGroup;
+            return;
+        }
+
+        //和你相遇的時候，我單身，可是你不是
+        if (IamSingle && YouAreSingle==false)
+        {
+            you.ConnectedGroup.Add(me);
+            me.ConnectedGroup = you.ConnectedGroup;
+            return;
+        }
+
+        //和我相遇的時候，你單身，可是我不是
+        if (IamSingle = false && YouAreSingle)
+        {
+            me.ConnectedGroup.Add(you);
+            you.ConnectedGroup = me.ConnectedGroup;
+            return;
+        }
+
+        //我不是單身，你也不是，可是我們相遇了
+        if (IamSingle = false && YouAreSingle == false)
+        {
+            me.ConnectedGroup.AddRange(you.ConnectedGroup.ToArray());
+            you.ConnectedGroup = me.ConnectedGroup;
+            return;
+        }
+            
+    }
 
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
@@ -146,9 +203,6 @@ public class PuzzlePiece : MonoBehaviour
                 StopMoving();
         }
             
-    }
-    void OnMouseExit()
-    {
     }
 
     //Just For Debug

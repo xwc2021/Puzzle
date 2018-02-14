@@ -28,8 +28,13 @@ public class PuzzlePiece : MonoBehaviour
 
     Vector3 oldLocalPos;
     Vector3 beginDragPos;
-    void OnMouseDown()
+    bool onMoving = false;
+    
+    void StartMoving()
     {
+        onMoving = true;
+        group.nowMovingPiece = this;
+
         oldLocalPos = transform.localPosition;
         beginDragPos = Input.mousePosition;
     }
@@ -42,7 +47,7 @@ public class PuzzlePiece : MonoBehaviour
         return v;
     }
 
-    void OnMouseDrag()
+    void MovingPiece()
     {
         //https://docs.unity3d.com/ScriptReference/Input-mousePosition.html
         //這裡是Sreen的delta
@@ -70,18 +75,21 @@ public class PuzzlePiece : MonoBehaviour
             //print(nowIndex);
             if (!inPocket)//不在口袋裡，就加進去
             {
-                pocket.AddToPocket(nowIndex, this,false);
+                pocket.AddToPocket(nowIndex, this, false);
             }
             else
             {
-                if(nowIndexInPocket!= nowIndex)
+                if (nowIndexInPocket != nowIndex)
                     pocket.SwapInPocket(nowIndexInPocket, nowIndex);//交換
             }
-        }    
+        }
     }
 
-    void OnMouseUp()
+    void StopMoving()
     {
+        onMoving = false;
+        group.nowMovingPiece = null;
+
         if (inPocket)
         {
             transform.parent = pocket.transform;
@@ -94,10 +102,57 @@ public class PuzzlePiece : MonoBehaviour
 
             //重新對齊Cell
             bucketIndex = group.AlightPieceToBucket(bucketIndex, this);
-            
         }
     }
+
+    static bool isMouseDown = false;
+    //點選後移動
+    void OnMouseDown() {
+        isMouseDown = true;
+        StartMoving();
+    }
+    void OnMouseDrag() { MovingPiece(); }
+    void OnMouseUp()
+    {
+        isMouseDown = false;
+        StopMoving();
+    }
+
+    //改善從口袋滑出拼圖的手感
+    void OnMouseOver()
+    {
+        if (!isMouseDown)//有點擊才發動
+            return;
+
+        //已經在moving其他的拼圖
+        if (group.nowMovingPiece != null)
+            return;
+
+        if (onMoving)
+            return;
+
+        StartMoving();
+    }
+    private void Update()
+    {
+        Debug.DrawLine(transform.position, transform.position + hHeight * Vector3.up, Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
+
+        isMouseDown = Input.GetMouseButton(0);
+        Debug.Log(isMouseDown);
+
+        if (onMoving)
+        {
+            if (isMouseDown)
+                MovingPiece();
+            else
+                StopMoving();
+        }
             
+    }
+    void OnMouseExit()
+    {
+    }
 
     //Just For Debug
     public float hWidth;
@@ -135,11 +190,5 @@ public class PuzzlePiece : MonoBehaviour
     public void ResetScale()
     {
         transform.localScale = oldScale;
-    }
-
-    private void Update()
-    {
-        Debug.DrawLine(transform.position, transform.position + hHeight * Vector3.up,Color.yellow);
-        Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
     }
 }

@@ -30,6 +30,8 @@ public class PuzzlePieceGroup : MonoBehaviour {
     const int rowCount = 4;
     const int columnCount = 6;
 
+    public PuzzlePiece nowMovingPiece;
+
     public PuzzlePiece[] map1D;
     int newRowCount;
     int newColumnCount;

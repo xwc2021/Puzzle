@@ -9,4 +9,6 @@ public class Tool  {
     {
         return (int)((x - (x % cell)) / cell);
     }
+
+    public readonly static int NullIndex = -1; 
 }

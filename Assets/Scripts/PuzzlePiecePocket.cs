@@ -68,7 +68,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
 
         pieceList.Remove(p);
         p.SetInPucket(false);
-        p.SetInPucketIndex(-1);
+        p.SetInPucketIndex(Tool.NullIndex);
         p.ResetScale();
 
         RefreshPocket();

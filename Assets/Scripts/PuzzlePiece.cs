@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
 {
-    int nowIndexInPocket=-1;
+    int bucketIndex= Tool.NullIndex;
+    public void SetBucketIndex(int bucketIndex) { this.bucketIndex = bucketIndex; }
+
+    int nowIndexInPocket= Tool.NullIndex;
     public void SetInPucketIndex(int nowIndexInPocket) { this.nowIndexInPocket = nowIndexInPocket; }
 
     bool inPocket = false;
@@ -82,12 +85,19 @@ public class PuzzlePiece : MonoBehaviour
         if (inPocket)
         {
             transform.parent = pocket.transform;
-            pocket.RefreshPocket();//重新對齊
+            pocket.RefreshPocket();//口袋重新對齊
+            group.ClearBucket(bucketIndex, this);//從桶子中移掉
         }
-            
         else
+        {
             transform.parent = group.transform;//放回group
+
+            //重新對齊Cell
+            bucketIndex = group.AlightPieceToBucket(bucketIndex, this);
+            
+        }
     }
+            
 
     //Just For Debug
     public float hWidth;

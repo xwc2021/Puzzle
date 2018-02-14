@@ -2,6 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+class PuzzleBucket
+{
+    List<PuzzlePiece>list = new List<PuzzlePiece>();
+    float depth=0;
+    float span = 1;
+
+    public void Add(PuzzlePiece p)
+    {
+        var localPos =p.transform.localPosition;
+        p.transform.localPosition = new Vector3(localPos.x, depth, localPos.z); 
+        list.Add(p);
+
+        depth += span;
+    }
+
+    public void Remove(PuzzlePiece p)
+    {
+        list.Remove(p);
+        depth -= span;
+    }
+}
+
 public class PuzzlePieceGroup : MonoBehaviour {
 
     const int pieceCount = 24;
@@ -86,39 +108,57 @@ public class PuzzlePieceGroup : MonoBehaviour {
         pos1D = new Vector3[count] ;
 
         for (var i = 0; i < map1D.Length; ++i)
-            pos1D[i] = map1D[i].transform.localPosition;
+            pos1D[i] = map1D[i].transform.localPosition; 
+    }
 
-        
+    //桶子可以接水，這裡的桶子是用來接拼圖(記錄拼圖重疊的順序)
+    PuzzleBucket[] buckets;
+    public void InitBucket(int W, int H)
+    {
+        var count = W * H * pieceCount;
+        buckets = new PuzzleBucket[count];
+
+        for (var i = 0; i < buckets.Length; ++i)
+            buckets[i] = new PuzzleBucket();
     }
 
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public Vector3 GetAlighPiecePos(float x,float z)
+    public int AlightPieceToBucket(int bucketIndex, PuzzlePiece p)
     {
+        //找出xIndex,zIndex
+        var target = p.transform;
+        var localPos = target.localPosition;
+        float x = localPos.x;
+        float z = localPos.z;
         var xIndex =Tool.GetIndexOfCell(x, -pieceWidth);
         var zIndex = Tool.GetIndexOfCell(z, -pieceHeight);
 
         xIndex=Mathf.Clamp(xIndex, 0, newColumnCount - 1);
         zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
-
         //print(xIndex + "," + zIndex);
+
         var i = GetNewIndex(xIndex, zIndex);
-        return pos1D[i];
+        if (i == bucketIndex)
+            return i;
+
+        //更新拼圖pos
+        target.localPosition = pos1D[i];
+
+        //移出桶子
+        if(bucketIndex!=Tool.NullIndex)
+            buckets[bucketIndex].Remove(p);
+
+        //放到桶子裡
+        buckets[i].Add(p);
+        return i;
     }
 
-    private void Update()
+    public void ClearBucket(int bucketIndex, PuzzlePiece p)
     {
-        Test_GetAlighPiecePos(0,0);
-    }
-
-    void Test_GetAlighPiecePos(int x,int y)
-    {
-        if (map1D.Length == 0)
-            return;
-        var element = map1D[GetNewIndex(x, y)];
-        var test = element.transform.localPosition;
-        GetAlighPiecePos(test.x, test.z);
+        buckets[bucketIndex].Remove(p);
+        p.SetBucketIndex(Tool.NullIndex);
     }
 
     public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)

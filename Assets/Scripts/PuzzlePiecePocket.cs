@@ -30,7 +30,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
         
         pieceList.Insert(index,p);
         p.SetPocket(this);
-        p.SetInPucket(true);
+        p.inPocket=true;
         p.SetScaleInPocket(new Vector3(scale, scale, scale));
 
         RefreshPocket();
@@ -67,8 +67,8 @@ public class PuzzlePiecePocket : MonoBehaviour {
             return;
 
         pieceList.Remove(p);
-        p.SetInPucket(false);
-        p.SetInPucketIndex(Tool.NullIndex);
+        p.inPocket = false;
+        p.nowIndexInPocket=Tool.NullIndex;
         p.ResetScale();
 
         RefreshPocket();
@@ -82,7 +82,7 @@ public class PuzzlePiecePocket : MonoBehaviour {
             nowPos += spanV3;
             var p = pieceList[i];
             p.transform.localPosition = nowPos;
-            p.SetInPucketIndex(i);
+            p.nowIndexInPocket=i;
         }   
     }
 

@@ -35,6 +35,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
     public PuzzlePiece[] map1D;
     int newRowCount;
     int newColumnCount;
+
     public void ReRangePiece(int W,int H)
     {
         newColumnCount = W * columnCount;
@@ -71,6 +72,35 @@ public class PuzzlePieceGroup : MonoBehaviour {
         }
     }
 
+    //建立相鄰資訊
+    public void InjectNeighborPiece()
+    {
+        var temp = new List<Vector2>();
+        for (var y = 0; y < newRowCount; ++y)
+        {
+            for (var x = 0; x < newColumnCount; ++x)
+            {
+                temp.Clear();
+                var index = GetNewIndex(x, y);
+                var p = map1D[index];
+
+                if (IsValidIndex(x - 1, y))
+                    temp.Add(new Vector2(-1, 0));
+
+                if (IsValidIndex(x + 1, y))
+                    temp.Add(new Vector2(1,0));
+
+                if (IsValidIndex(x , y-1))
+                    temp.Add(new Vector2(0, -1));
+
+                if (IsValidIndex(x, y+1))
+                    temp.Add(new Vector2(0, 1));
+
+                p.NeighborOffset = temp.ToArray();
+            }
+        }
+    }
+
     //Before ReRangePiece
     int GetIndex(int column, int row,int group)
     {
@@ -83,16 +113,21 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return column + row * newColumnCount;
     }
 
+    bool IsValidIndex(int column, int row)
+    {
+        if (column < newColumnCount && column >= 0 && row < newRowCount && row >= 0)
+            return true;
+        else
+            return false;
+    }
+
     float pieceWidth;
     float pieceHeight;
     float hPieceWidth;
     float hPieceHeight;
 
-    public void ResetPieceSize(int W, int H,float ImageScaleX,float ImageScaleZ)
+    public void ResetPieceSize(float ImageScaleX,float ImageScaleZ)
     {
-        newColumnCount = W * columnCount;
-        newRowCount = H * rowCount;
-
         pieceWidth =  ImageScaleX*ScreenAdapter.UnitSize/ newColumnCount;
         pieceHeight =  ImageScaleZ* ScreenAdapter.UnitSize / newRowCount;
         hPieceWidth = 0.5f * pieceWidth;
@@ -162,7 +197,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
             return;
 
         buckets[bucketIndex].Remove(p);
-        p.SetBucketIndex(Tool.NullIndex);
+        p.bucketIndex=Tool.NullIndex;
     }
 
     public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)

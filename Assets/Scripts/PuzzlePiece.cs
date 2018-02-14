@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
 {
-    int bucketIndex= Tool.NullIndex;
-    public void SetBucketIndex(int bucketIndex) { this.bucketIndex = bucketIndex; }
 
-    int nowIndexInPocket= Tool.NullIndex;
-    public void SetInPucketIndex(int nowIndexInPocket) { this.nowIndexInPocket = nowIndexInPocket; }
+    public Vector2[] NeighborOffset;
 
-    bool inPocket = false;
-    public void SetInPucket(bool inPocket) { this.inPocket = inPocket; }
+    public int bucketIndex= Tool.NullIndex;
+    public int nowIndexInPocket = Tool.NullIndex;
+    public bool inPocket = false;
 
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
@@ -139,7 +137,6 @@ public class PuzzlePiece : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
 
         isMouseDown = Input.GetMouseButton(0);
-        Debug.Log(isMouseDown);
 
         if (onMoving)
         {

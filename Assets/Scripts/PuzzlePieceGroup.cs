@@ -2,24 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface IBucketElement
+{
+    int GetBucketIndex();
+    void SetBucketIndex(int value);
+    Transform GetTransform();
+}
+
 class PuzzleBucket
 {
-    List<Transform> list = new List<Transform>();
+    List<IBucketElement> list = new List<IBucketElement>();
     float depth=0;
     float span = 1;
 
-    public void Add(Transform t)
+    public void Add(IBucketElement element)
     {
-        var localPos =t.localPosition;
+        var t = element.GetTransform();
+        var localPos = t.localPosition;
         t.localPosition = new Vector3(localPos.x, depth, localPos.z); 
-        list.Add(t);
+        list.Add(element);
 
         depth += span;
     }
 
-    public void Remove(Transform t)
+    public void Remove(IBucketElement element)
     {
-        list.Remove(t);
+        list.Remove(element);
         depth -= span;
     }
 }
@@ -166,10 +174,10 @@ public class PuzzlePieceGroup : MonoBehaviour {
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public int AlightPieceToBucket(int bucketIndex, PuzzlePiece p)
+    public int AlightPieceToBucket(IBucketElement element)
     {
         //找出xIndex,zIndex
-        var target = p.transform;
+        var target = element.GetTransform();
         var localPos = target.localPosition;
         float x = localPos.x;
         float z = localPos.z;
@@ -186,22 +194,19 @@ public class PuzzlePieceGroup : MonoBehaviour {
         //更新拼圖pos
         target.localPosition = pos1D[newIndex];
 
-        //移出桶子
-        if(bucketIndex!=Tool.NullIndex)
-            buckets[bucketIndex].Remove(p.transform);
-
         //放到桶子裡
-        buckets[newIndex].Add(p.transform);
+        buckets[newIndex].Add(element);
         return newIndex;
     }
 
-    public void ClearBucket(int bucketIndex, PuzzlePiece p)
+    public void RemoveFromBucket( IBucketElement element)
     {
+        var bucketIndex = element.GetBucketIndex();
         if (bucketIndex == Tool.NullIndex)
             return;
 
-        buckets[bucketIndex].Remove(p.transform);
-        p.bucketIndex=Tool.NullIndex;
+        buckets[bucketIndex].Remove(element);
+        element.SetBucketIndex(Tool.NullIndex);
     }
 
     public void SouffleToPocket(int W, int H,PuzzlePiecePocket puzzlePiecePocket)

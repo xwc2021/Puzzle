@@ -2,8 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuzzlePiece : MonoBehaviour
+public class PuzzlePiece : MonoBehaviour, IBucketElement
 {
+    public int bucketIndex = Tool.NullIndex;
+    public int GetBucketIndex()
+    {
+        return bucketIndex;
+    }
+    public void SetBucketIndex(int value)
+    {
+        bucketIndex = value;
+    }
+    public Transform GetTransform()
+    {
+        return transform;
+    }
     public int xIndexInGroup;
     public int yIndexInGroup;
 
@@ -11,7 +24,6 @@ public class PuzzlePiece : MonoBehaviour
     public Vector2[] NeighborOffset;
     public bool[] isConnected;
 
-    public int bucketIndex= Tool.NullIndex;
     public int nowIndexInPocket = Tool.NullIndex;
     public bool inPocket = false;
 
@@ -92,6 +104,10 @@ public class PuzzlePiece : MonoBehaviour
 
         oldLocalPos = transform.localPosition;
         beginDragPos = Input.mousePosition;
+
+        //移出桶子
+        if (bucketIndex != Tool.NullIndex)
+            group.RemoveFromBucket(this);
     }
 
     Vector3 ScreenVectorToWorld(Vector3 v)
@@ -149,14 +165,14 @@ public class PuzzlePiece : MonoBehaviour
         {
             transform.parent = pocket.transform;
             pocket.RefreshPocket();//口袋重新對齊
-            group.ClearBucket(bucketIndex, this);//從桶子中移掉
+            group.RemoveFromBucket(this);//從桶子中移掉
         }
         else
         {
             transform.parent = group.transform;//放回group
 
             //重新對齊Cell
-            bucketIndex = group.AlightPieceToBucket(bucketIndex, this);
+            bucketIndex = group.AlightPieceToBucket(this);
         }
     }
 

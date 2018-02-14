@@ -67,7 +67,7 @@ public class PuzzlePiece : MonoBehaviour
             var localZ = pos.z;
 
             var nowIndex = pocket.GetInsertIndex(localZ, inPocket);
-            print(nowIndex);
+            //print(nowIndex);
             if (!inPocket)//不在口袋裡，就加進去
             {
                 pocket.AddToPocket(nowIndex, this,false);

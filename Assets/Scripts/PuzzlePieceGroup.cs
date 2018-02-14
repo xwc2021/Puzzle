@@ -139,20 +139,19 @@ public class PuzzlePieceGroup : MonoBehaviour {
         zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
         //print(xIndex + "," + zIndex);
 
-        var i = GetNewIndex(xIndex, zIndex);
-        if (i == bucketIndex)
-            return i;
+        var newIndex = GetNewIndex(xIndex, zIndex);
+        //print(bucketIndex + "," + i);
 
         //更新拼圖pos
-        target.localPosition = pos1D[i];
+        target.localPosition = pos1D[newIndex];
 
         //移出桶子
         if(bucketIndex!=Tool.NullIndex)
             buckets[bucketIndex].Remove(p);
 
         //放到桶子裡
-        buckets[i].Add(p);
-        return i;
+        buckets[newIndex].Add(p);
+        return newIndex;
     }
 
     public void ClearBucket(int bucketIndex, PuzzlePiece p)

@@ -373,14 +373,12 @@ public class PuzzlePieceGroup : MonoBehaviour {
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public int AlightPieceToCell(PuzzlePiece piece,int xIndex, int yIndex)
+    public void AlightPieceToCell(PuzzlePiece piece,int xIndex, int yIndex)
     {
         var newIndex = GetNewIndex(xIndex, yIndex);
 
         //更新拼圖pos
         piece.transform.localPosition = pos1D[newIndex];
-
-        return newIndex;
     }
 
     public Vector3 GetDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
@@ -393,6 +391,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
     {
         //放到桶子裡
         var i = GetNewIndex(xIndex, yIndex);
+        p.bucketIndex = i;
         buckets[i].Add(p);
     }
 

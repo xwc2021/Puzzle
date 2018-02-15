@@ -109,8 +109,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     public void ClearFromBucket()
     {
         //移出桶子
-        if (bucketIndex != Tool.NullIndex)
-            group.RemoveFromBucket(this);
+        group.RemoveFromBucket(this);
     }
 
     public void BeforeMoving()
@@ -143,7 +142,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             group.GetAlignCell(transform.localPosition, out x, out y);
 
             //(1)pos重新對齊Cell
-            bucketIndex = group.AlightPieceToCell(this, x, y);
+            group.AlightPieceToCell(this, x, y);
 
             //(2)更新位在那一個Bucket
             group.InjectToBucket(this, x, y);

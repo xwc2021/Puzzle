@@ -113,6 +113,67 @@ class LayerMananger
             nowY += span;
         }
     }
+
+    public void Merge(HashSet<IPuzzleLayer> set, PuzzlePieceGroup group)
+    {
+        //找出含有最多piece的Layer，把所有piece都給它
+        var layers = new List<IPuzzleLayer>(set);
+
+        //print("before sort");
+        //foreach (var e in layers)
+        //    print(e.GetLayerIndex());
+
+        //從depth小排到大
+        layers.Sort((a, b) => {
+            return a.GetLayerIndex() - b.GetLayerIndex();
+        });
+
+        //print("after sort");
+        //foreach (var e in layers)
+        //    print(e.GetLayerIndex());
+
+        var theChosenOne = layers[0];
+        var layerManager = LayerMananger.GetInstance();
+
+        //全部都是piece
+        if (theChosenOne.GetPiecesCount() == 1)
+        {
+            var p = theChosenOne as PuzzlePiece;
+
+            //建立connectedSet，並把其他piece都加進來
+            var cs = group.CreateConnectedSet(p);
+            for (var i = layers.Count - 1; i >= 0; --i) //從最上層開始
+            {
+                var L = layers[i];
+                cs.Add(L as PuzzlePiece);
+                layerManager.Remove(L);
+            }
+
+            layerManager.Add(cs);
+            return;
+        }
+
+        var nowCS = theChosenOne as ConnectedSet;
+        //把其他Layer裡的piece加到擁有最多piece的那個Layer
+        for (var i = layers.Count - 1; i >= 1; --i) //從最上層開始
+        {
+            var L = layers[i];
+
+            if (L.GetPiecesCount() == 1)
+            {
+                nowCS.Add(L as PuzzlePiece);
+                layerManager.Remove(L);
+            }
+            else
+            {
+                var cs = L as ConnectedSet;
+                nowCS.Add(cs);
+                layerManager.Remove(L);
+                Object.Destroy(cs.gameObject);//刪除connectedSet
+            }
+        }
+        layerManager.Update(theChosenOne);
+    }
 }
 
 public class PuzzlePieceGroup : MonoBehaviour {

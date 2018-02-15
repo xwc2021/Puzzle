@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PuzzleBuilder : MonoBehaviour {
 
-    
-
     //分解成幾組
     [SerializeField]
     int W=1;

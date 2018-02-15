@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuzzlePiece : MonoBehaviour, IBucketElement
+public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 {
     public int bucketIndex = Tool.NullIndex;
-    public int GetBucketIndex()
+
+    public int layerIndex = Tool.NullIndex;
+    public int GetLayerIndex()
     {
-        return bucketIndex;
+        return layerIndex;
     }
-    public void SetBucketIndex(int value)
+    public void SetLayerIndex(int value)
     {
-        bucketIndex = value;
+        layerIndex = value;
     }
     public Transform GetTransform()
     {

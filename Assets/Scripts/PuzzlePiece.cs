@@ -21,6 +21,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     public int bucketIndex = Tool.NullIndex;
     public int xIndexInGroup;
     public int yIndexInGroup;
+    public int indexInGroup;
 
     //鄰接資訊
     public Vector2[] NeighborOffset;
@@ -50,9 +51,29 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     public ConnectedSet connectedSet;
 
-    bool FindConnectLayerAndMerge()
+    void FindConnectLayerAndMerge(int x,int y)
     {
-        return false;
+        var findList = new List<IPuzzleLayer>();
+        for (var i = 0; i < NeighborOffset.Length; ++i)
+        {
+            var offset = NeighborOffset[i];
+            var offsetX = (int)offset.x;
+            var offsetY = (int)offset.y;
+            var Pieces = group.GetBucketPieces(x+ offsetX, y+ offsetY) ;
+            if (Pieces == null)
+                continue;
+
+            for (var k = 0; k < Pieces.Length; ++k)
+            {
+                var p = Pieces[k];
+                if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
+                {
+                    var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer ;
+                    findList.Add(findOne);
+                    break;
+                }
+            }
+        }
     }
 
     public void ClearFromBucket()
@@ -80,17 +101,17 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         else
         {
             //取得所在Cell
-            int x, z;
-            group.GetAlignCell(transform.localPosition, out x, out z);
+            int x, y;
+            group.GetAlignCell(transform.localPosition, out x, out y);
 
             //(1)更新Bucket
-            group.InjectToBucket(this, x, z);
+            group.InjectToBucket(this, x, y);
 
             //(2)pos重新對齊Cell
-            bucketIndex = group.AlightPieceToCell(this, x, z);
+            bucketIndex = group.AlightPieceToCell(this, x, y);
 
             //(3)找出可以連接的Layer
-            FindConnectLayerAndMerge();
+            FindConnectLayerAndMerge(x,y);
         }
     }
 

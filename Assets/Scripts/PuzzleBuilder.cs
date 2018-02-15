@@ -61,7 +61,6 @@ public class PuzzleBuilder : MonoBehaviour {
         target.RecordPositionBeforeSouffleToPocket(W, H);
         target.InitBucketAndLayer(W, H);
         target.SouffleToPocket(W, H, puzzlePiecePocket);
-        target.CreateConnectedSet();
 
         target.transform.position = helpCorner.position;
     }

@@ -6,7 +6,11 @@ using UnityEngine;
 class PuzzleBucket
 {
     List<PuzzlePiece> list = new List<PuzzlePiece>();
-    
+
+    public PuzzlePiece[] GetTotal()
+    {
+        return list.ToArray();
+    }
 
     public void Add(PuzzlePiece p)
     {
@@ -45,12 +49,15 @@ public class PuzzlePieceGroup : MonoBehaviour {
     [SerializeField]
     ConnectedSet templateConnectedSet;
 
-    public ConnectedSet CreateConnectedSet()
+    public ConnectedSet CreateConnectedSet(PuzzlePiece p)
     {
+        //找出目前所在的Cell和原始的Cell的diff
+        var diff = pos1D[p.bucketIndex]-pos1D[p.indexInGroup];
+
         var cs =GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
         var t = cs.transform;
         t.parent = transform;
-        t.localPosition = Vector3.zero;
+        t.localPosition = Vector3.zero+ diff;
 
         return cs;
     }
@@ -92,6 +99,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
                         nowPiece.name = "("+nX + "," + nY+")";//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;
+                        nowPiece.indexInGroup = newIndex;
 
                     }
                 }
@@ -178,6 +186,15 @@ public class PuzzlePieceGroup : MonoBehaviour {
 
     LayerMananger layerManager;
 
+    public PuzzlePiece[] GetBucketPieces(int column, int row)
+    {
+        if (!IsValidIndex(column, row))
+            return null;
+
+        var i = GetNewIndex(column, row);
+        return buckets[i].GetTotal();
+    }
+
     //桶子可以接水，這裡的桶子是用來接拼圖(空間索引)
     PuzzleBucket[] buckets;
     public void InitBucketAndLayer(int W, int H)
@@ -191,25 +208,25 @@ public class PuzzlePieceGroup : MonoBehaviour {
             buckets[i] = new PuzzleBucket();
     }
 
-    public void GetAlignCell(Vector3 localPos, out int xIndex, out int zIndex)
+    public void GetAlignCell(Vector3 localPos, out int xIndex, out int yIndex)
     {
         //找出xIndex,zIndex
         float x = localPos.x;
         float z = localPos.z;
         xIndex = Tool.GetIndexOfCell(x, -pieceWidth);
-        zIndex = Tool.GetIndexOfCell(z, -pieceHeight);
+        yIndex = Tool.GetIndexOfCell(z, -pieceHeight);
 
         xIndex = Mathf.Clamp(xIndex, 0, newColumnCount - 1);
-        zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
+        yIndex = Mathf.Clamp(yIndex, 0, newRowCount - 1);
         //print(xIndex + "," + zIndex);
     }
 
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public int AlightPieceToCell(PuzzlePiece p,int xIndex, int zIndex)
+    public int AlightPieceToCell(PuzzlePiece p,int xIndex, int yIndex)
     {
-        var newIndex = GetNewIndex(xIndex, zIndex);
+        var newIndex = GetNewIndex(xIndex, yIndex);
         //print(bucketIndex + "," + i);
 
         //更新拼圖pos
@@ -218,10 +235,10 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return newIndex;
     }
 
-    public void InjectToBucket(PuzzlePiece p, int xIndex, int zIndex)
+    public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
     {
         //放到桶子裡
-        var i = GetNewIndex(xIndex, zIndex);
+        var i = GetNewIndex(xIndex, yIndex);
         buckets[i].Add(p);
     }
 

@@ -59,6 +59,8 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
             p.ClearFromBucket();
     }
 
+    static int bucketOffsetX;
+    static int bucketOffsetY;
     public void AfterMoving()
     {
         //取得所在Cell
@@ -71,11 +73,19 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         var diff =group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
         transform.localPosition += diff;
 
+        //因為ConnectedSet不一定會剛好和Group對齊
+        //所以要使用Offset來修正
+        bucketOffsetX = x - pieceForAlign.xIndexInGroup;
+        bucketOffsetY = y - pieceForAlign.yIndexInGroup;
+
         //(2)所有Piece更新位在那一個Bucket
         foreach (var p in pieces)
         {
-            if(group.IsValidIndex(x,y))
-                group.InjectToBucket(p, x, y);
+            var targetX = p.xIndexInGroup + bucketOffsetX;
+            var targetY = p.yIndexInGroup + bucketOffsetY;
+
+            if (group.IsValidIndex(targetX, targetY))
+                group.InjectToBucket(p, targetX, targetY);
         }
 
         //(3)找出可以相連的Layer
@@ -86,10 +96,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     {
         var set = new HashSet<IPuzzleLayer>();
 
-        //因為ConnectedSet不一定會剛好和Group對齊
-        //所以要使用Offset來修正
-        var bucketOffsetX = x - pieceForAlign.xIndexInGroup;
-        var bucketOffsetY = y - pieceForAlign.yIndexInGroup;
+        
 
         foreach (var p in pieces)
         {
@@ -111,7 +118,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
             LayerMananger.GetInstance().RefreshLayerDepth();
             return;
         }
-
+        
         //Merge Layer
         set.Add(this);//把自己也加進去
         LayerMananger.GetInstance().Merge(set, group);

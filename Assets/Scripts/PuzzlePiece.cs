@@ -74,7 +74,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 var p = Pieces[k];
                 if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
                 {
-                    //已經相接在一起來
+                    //已經相接在一起，就跳過
                     if (p.connectedSet == connectedSet && connectedSet != null)
                         continue;
 
@@ -100,7 +100,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             LayerMananger.GetInstance().RefreshLayerDepth();
             return;
         }
-
+        
         //Merge Layer
         set.Add(this);//把自己也加進去
         LayerMananger.GetInstance().Merge(set,group);

@@ -50,7 +50,8 @@ class LayerMananger
         var i = layer.GetLayerIndex();
         layers.RemoveAt(i);
 
-        DownToFit(layer, layer.GetLayerIndex());
+        //從下往上更新會比較快
+        UpToFit(layer);
 
         RefreshLayerDepth();
     }
@@ -68,6 +69,21 @@ class LayerMananger
         }
             
         RefreshLayerDepth();
+    }
+
+    void UpToFit(IPuzzleLayer layer)
+    {
+        for (var i = 0; i<layers.Count;++i)
+        {
+            var L = layers[i];
+            if (layer.GetPiecesCount() > L.GetPiecesCount())
+            {
+                layers.Insert(i, layer);
+                return;
+            }
+        }
+
+        layers.Insert(layers.Count, layer);
     }
 
     void DownToFit(IPuzzleLayer layer,int startIndex)

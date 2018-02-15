@@ -5,6 +5,9 @@ using UnityEngine;
 //已經連在一起的Puzzle
 public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 {
+    //拉動時的參考Piece
+    public static PuzzlePiece pieceForAlign;
+
     public PuzzlePieceGroup group;
     public int GetPiecesCount()
     {
@@ -58,10 +61,59 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 
     public void AfterMoving()
     {
-        //(1)更新Bucket
+        //取得所在Cell
+        var worldPos =pieceForAlign.transform.position;
+        var localPosInGroup =group.transform.InverseTransformPoint(worldPos);
+        int x, y;
+        group.GetAlignCell(localPosInGroup, out x, out y);
 
-        //(2)pos重新對齊Cell
+        //(1)pos重新對齊Cell
+        var diff =group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
+        transform.localPosition += diff;
 
-        //(3)找出可以連接的Layer
+        //(2)所有Piece更新位在那一個Bucket
+        foreach (var p in pieces)
+        {
+            if(group.IsValidIndex(x,y))
+                group.InjectToBucket(p, x, y);
+        }
+
+        //(3)找出可以相連的Layer
+        FindConnectLayerAndMerge(x, y);
+    }
+
+    void FindConnectLayerAndMerge(int x,int y)
+    {
+        var set = new HashSet<IPuzzleLayer>();
+
+        //因為ConnectedSet不一定會剛好和Group對齊
+        //所以要使用Offset來修正
+        var bucketOffsetX = x - pieceForAlign.xIndexInGroup;
+        var bucketOffsetY = y - pieceForAlign.yIndexInGroup;
+
+        foreach (var p in pieces)
+        {
+            if (p != pieceForAlign)
+            {
+                var targetX = p.xIndexInGroup + bucketOffsetX;
+                var targetY = p.yIndexInGroup + bucketOffsetY;
+
+                if(group.IsValidIndex(targetX,targetY))
+                    p.FindConnectLayer(targetX, targetY, set);
+            }
+            else
+                p.FindConnectLayer(x, y, set);
+        }
+            
+        //沒有找到任何相鄰Layer
+        if (set.Count == 0)
+        {
+            LayerMananger.GetInstance().RefreshLayerDepth();
+            return;
+        }
+
+        //Merge Layer
+        set.Add(this);//把自己也加進去
+        LayerMananger.GetInstance().Merge(set, group);
     }
 }

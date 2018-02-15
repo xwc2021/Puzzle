@@ -22,7 +22,9 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         return transform;
     }
 
+    //CreateConnectedSet會使用bucketIndex來計算diff
     public int bucketIndex = Tool.NullIndex;
+
     public int xIndexInGroup;
     public int yIndexInGroup;
     public int indexInGroup;
@@ -72,6 +74,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 var p = Pieces[k];
                 if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
                 {
+                    //已經相接在一起來
+                    if (p.connectedSet == connectedSet && connectedSet != null)
+                        continue;
+
                     var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer;
 
                     if (!set.Contains(findOne))//有可能findOne已經在set裡了
@@ -128,11 +134,11 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             int x, y;
             group.GetAlignCell(transform.localPosition, out x, out y);
 
-            //(1)更新Bucket
-            group.InjectToBucket(this, x, y);
-
-            //(2)pos重新對齊Cell
+            //(1)pos重新對齊Cell
             bucketIndex = group.AlightPieceToCell(this, x, y);
+
+            //(2)更新位在那一個Bucket
+            group.InjectToBucket(this, x, y);
 
             //還不屬於Layer
             if (GetLayerIndex() == Tool.NullIndex)
@@ -155,6 +161,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         group.nowMovingPiece = this;
 
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
+        ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
 
         oldLocalPos = MovingTarget.localPosition;
         beginDragPos = Input.mousePosition;

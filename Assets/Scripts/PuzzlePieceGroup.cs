@@ -286,7 +286,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return column + row * newColumnCount;
     }
 
-    bool IsValidIndex(int column, int row)
+    public bool IsValidIndex(int column, int row)
     {
         if (column < newColumnCount && column >= 0 && row < newRowCount && row >= 0)
             return true;
@@ -357,15 +357,20 @@ public class PuzzlePieceGroup : MonoBehaviour {
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public int AlightPieceToCell(PuzzlePiece p,int xIndex, int yIndex)
+    public int AlightPieceToCell(PuzzlePiece piece,int xIndex, int yIndex)
     {
         var newIndex = GetNewIndex(xIndex, yIndex);
-        //print(bucketIndex + "," + i);
 
         //更新拼圖pos
-        p.transform.localPosition = pos1D[newIndex];
+        piece.transform.localPosition = pos1D[newIndex];
 
         return newIndex;
+    }
+
+    public Vector3 GetDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
+    {
+        var newIndex = GetNewIndex(xIndex, yIndex);
+        return pos1D[newIndex]- localPos;
     }
 
     public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
@@ -380,7 +385,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         if (p.bucketIndex == Tool.NullIndex)
             return;
 
-        buckets[p.bucketIndex].Remove(p);
+        buckets[p.bucketIndex].Remove(p);//這裡是O(n) 
         p.bucketIndex=Tool.NullIndex;
     }
 

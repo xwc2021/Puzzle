@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 {
+    public int GetPiecesCount()
+    {
+        return 1;
+    }
     public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
@@ -53,7 +57,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     void FindConnectLayerAndMerge(int x,int y)
     {
-        var findList = new List<IPuzzleLayer>();
+      
+        var set=new HashSet<IPuzzleLayer>();
         for (var i = 0; i < NeighborOffset.Length; ++i)
         {
             var offset = NeighborOffset[i];
@@ -69,10 +74,64 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
                 {
                     var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer ;
-                    findList.Add(findOne);
+
+                    if(!set.Contains(findOne))//有可能findOne已經在set裡了
+                        set.Add(findOne);
+
                     break;
                 }
             }
+        }
+
+        //沒有找到任何相鄰
+        if (set.Count == 0)
+            return;
+
+        set.Add(this);//把自己也加進去
+        //找出含有最多piece的Layer，把所有piece都給它
+        var layers = new List<IPuzzleLayer>(set);
+
+        //print("before sort");
+        //foreach (var e in layers)
+        //    print(e.GetPiecesCount());
+
+        layers.Sort((a, b) => { 
+            return b.GetPiecesCount() - a.GetPiecesCount();
+        });
+
+        //print("after sort");
+        //foreach (var e in layers)
+        //    print(e.GetPiecesCount());
+
+        var theChosenOne = layers[0];
+
+        //全部都是piece
+        if (theChosenOne.GetPiecesCount() == 1)
+        {
+            var p = theChosenOne as PuzzlePiece;
+
+            //建立connectedSet，並把其他piece都加進來
+            var cs =group.CreateConnectedSet(p);
+            foreach (var L in layers)
+                cs.Add(L as PuzzlePiece);
+
+            return;
+        }
+
+        var nowCS = theChosenOne as ConnectedSet;
+        //把其他Layer裡的piece加到擁有最多piece的那個Layer
+        for (var i = 1; i < layers.Count; ++i)
+        {
+            var L= layers[i];
+
+            if (L.GetPiecesCount() == 1)
+                nowCS.Add(L as PuzzlePiece);
+            else
+            {
+                var cs = L as ConnectedSet;
+                nowCS.Add(cs);
+                Destroy(cs.gameObject);
+            }   
         }
     }
 
@@ -157,6 +216,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
         else
         {
+            //已經拼好的，就不能放回口袋
+            if (connectedSet != null)
+                return;
+
             //轉換回Pocket的local space
             var pos = transform.position;
             pos = pocket.transform.InverseTransformPoint(pos);
@@ -189,8 +252,9 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
         else
         {
-            transform.parent = group.transform;//放回group
-
+            if(connectedSet==null)
+                transform.parent = group.transform;//放回group
+            
             AfterMoving();
             
         }

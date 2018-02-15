@@ -5,6 +5,11 @@ using UnityEngine;
 //已經連在一起的Puzzle
 public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 {
+    public PuzzlePieceGroup group;
+    public int GetPiecesCount()
+    {
+        return pieces.Count;
+    }
     public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
@@ -19,27 +24,35 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         return transform;
     }
 
-    public List<PuzzlePiece> list;
+    public List<PuzzlePiece> pieces;
 
     void Awake()
     {
-        list = new List<PuzzlePiece>();
+        pieces = new List<PuzzlePiece>();
     }
 
     public void Add(ConnectedSet target)
     {
-        foreach (var p in target.list)
-            list.Add(p);
+        foreach (var p in target.pieces)
+            Add(p);
+
+        target.pieces.Clear();
     }
 
     public void Add(PuzzlePiece p)
     {
-        list.Add(p);
+        pieces.Add(p);
+        p.connectedSet = this;
+
+        //對齊到位置上
+        var t = p.transform;
+        t.parent = transform;
+        t.localPosition = group.pos1D[p.indexInGroup];
     }
 
     public void BeforeMoving()
     {
-        foreach (var p in list)
+        foreach (var p in pieces)
             p.ClearFromBucket();
     }
 

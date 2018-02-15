@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IPuzzleLayer
 {
+    int GetPiecesCount();
     void BeforeMoving();
     void AfterMoving();
     int GetLayerIndex();

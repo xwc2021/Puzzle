@@ -59,6 +59,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         t.parent = transform;
         t.localPosition = Vector3.zero+ diff;
 
+        cs.group = this;
         return cs;
     }
 
@@ -195,7 +196,7 @@ public class PuzzlePieceGroup : MonoBehaviour {
         return buckets[i].GetTotal();
     }
 
-    //桶子可以接水，這裡的桶子是用來接拼圖(空間索引)
+    //桶子可以接水，這裡的桶子是用來裝拼圖(空間索引)
     PuzzleBucket[] buckets;
     public void InitBucketAndLayer(int W, int H)
     {

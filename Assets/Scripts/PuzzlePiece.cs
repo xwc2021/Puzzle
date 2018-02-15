@@ -84,9 +84,12 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             }
         }
 
-        //沒有找到任何相鄰
+        //沒有找到任何相鄰Layer
         if (set.Count == 0)
+        {
+            LayerMananger.GetInstance().RefreshLayerDepth();
             return;
+        }    
 
         set.Add(this);//把自己也加進去
         //找出含有最多piece的Layer，把所有piece都給它
@@ -94,17 +97,19 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
         //print("before sort");
         //foreach (var e in layers)
-        //    print(e.GetPiecesCount());
+        //    print(e.GetLayerIndex());
 
+        //從depth小排到大
         layers.Sort((a, b) => { 
-            return b.GetPiecesCount() - a.GetPiecesCount();
+            return a.GetLayerIndex()-b.GetLayerIndex();
         });
 
         //print("after sort");
         //foreach (var e in layers)
-        //    print(e.GetPiecesCount());
+        //    print(e.GetLayerIndex());
 
         var theChosenOne = layers[0];
+        var layerManager =LayerMananger.GetInstance();
 
         //全部都是piece
         if (theChosenOne.GetPiecesCount() == 1)
@@ -113,27 +118,37 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
             //建立connectedSet，並把其他piece都加進來
             var cs =group.CreateConnectedSet(p);
-            foreach (var L in layers)
+            for (var i = layers.Count - 1; i >=0 ; --i) //從最上層開始
+            {
+                var L = layers[i];
                 cs.Add(L as PuzzlePiece);
+                layerManager.Remove(L);
+            }
 
+            layerManager.Add(cs);
             return;
         }
 
         var nowCS = theChosenOne as ConnectedSet;
         //把其他Layer裡的piece加到擁有最多piece的那個Layer
-        for (var i = 1; i < layers.Count; ++i)
+        for (var i = layers.Count-1; i >= 1; --i) //從最上層開始
         {
             var L= layers[i];
 
             if (L.GetPiecesCount() == 1)
+            {
                 nowCS.Add(L as PuzzlePiece);
+                layerManager.Remove(L);
+            }   
             else
             {
                 var cs = L as ConnectedSet;
                 nowCS.Add(cs);
-                Destroy(cs.gameObject);
+                layerManager.Remove(L);
+                Destroy(cs.gameObject);//刪除connectedSet
             }   
         }
+        layerManager.Update(theChosenOne);
     }
 
     public void ClearFromBucket()
@@ -170,8 +185,14 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             //(2)pos重新對齊Cell
             bucketIndex = group.AlightPieceToCell(this, x, y);
 
+            //還不屬於Layer
+            if (GetLayerIndex() == Tool.NullIndex)
+                LayerMananger.GetInstance().Add(this);
+
             //(3)找出可以連接的Layer
             FindConnectLayerAndMerge(x,y);
+
+            
         }
     }
 

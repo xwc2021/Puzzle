@@ -29,14 +29,89 @@ class LayerMananger
     float depth = 0;
     float span = 1;
 
-    List<IPuzzleLayer> list = new List<IPuzzleLayer>();
+    List<IPuzzleLayer> layers;
 
-    public void Add()
+    private LayerMananger()
     {
+        layers = new List<IPuzzleLayer>();
     }
 
+    static LayerMananger instance;
+    public static LayerMananger GetInstance()
+    {
+        if (instance == null)
+            instance = new LayerMananger();
+
+        return instance;
+    }
+
+    public void Update(IPuzzleLayer layer)
+    {
+        var i = layer.GetLayerIndex();
+        layers.RemoveAt(i);
+
+        DownToFit(layer, layer.GetLayerIndex());
+
+        RefreshLayerDepth();
+    }
+
+    public void Add(IPuzzleLayer layer)
+    {
+        var startIndex = layers.Count - 1;
+
+        if (startIndex >= 0)
+            DownToFit(layer, startIndex);
+        else
+        {
+            layer.SetLayerIndex(0);
+            layers.Add(layer);
+        }
+            
+        RefreshLayerDepth();
+    }
+
+    void DownToFit(IPuzzleLayer layer,int startIndex)
+    {
+        for (var i = startIndex; i >= 0; --i)
+        {
+            var L = layers[i];
+            if (layer.GetPiecesCount() <= L.GetPiecesCount())
+            {
+                var insetIndex = i + 1;
+                layers.Insert(insetIndex, layer);
+                return;
+            }
+        }
+
+        //比所有的都大
+        var head = 0;
+        layers.Insert(head, layer);
+    }
+
+    public void Remove(IPuzzleLayer layer)
+    {
+        var i = layer.GetLayerIndex();
+        layers.RemoveAt(i);
+        layer.SetLayerIndex(Tool.NullIndex);
+
+        RefreshLayerDepth();
+    }
+
+    //這裡還可以優化：不用全部更新
     public void RefreshLayerDepth()
     {
+        Debug.Log("Layer count=" + layers.Count);
+        var nowY = 0.0f;
+        for (var i = 0; i < layers.Count; ++i)
+        {
+            var layer = layers[i];
+            layer.SetLayerIndex(i);
+            var t = layer.GetTransform();
+            var pos =t.localPosition;
+            t.localPosition = new Vector3(pos.x, nowY , pos.z);
+
+            nowY += span;
+        }
     }
 }
 
@@ -185,8 +260,6 @@ public class PuzzlePieceGroup : MonoBehaviour {
             pos1D[i] = map1D[i].transform.localPosition; 
     }
 
-    LayerMananger layerManager;
-
     public PuzzlePiece[] GetBucketPieces(int column, int row)
     {
         if (!IsValidIndex(column, row))
@@ -200,8 +273,6 @@ public class PuzzlePieceGroup : MonoBehaviour {
     PuzzleBucket[] buckets;
     public void InitBucketAndLayer(int W, int H)
     {
-        layerManager = new LayerMananger();
-
         var count = W * H * pieceCount;
         buckets = new PuzzleBucket[count];
 

@@ -50,6 +50,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     Transform GetParentTransform()
     {
+        //不管現在的paretn是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
         return transform.parent;
     }
 
@@ -177,13 +178,17 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     Vector3 oldLocalPos;
     Vector3 beginDragPos;
     bool onMoving = false;
+
+    static Transform MovingTarget;
     
     void StartMoving()
     {
         onMoving = true;
         group.nowMovingPiece = this;
 
-        oldLocalPos = transform.localPosition;
+        MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
+
+        oldLocalPos = MovingTarget.localPosition;
         beginDragPos = Input.mousePosition;
 
         BeforeMoving();
@@ -205,8 +210,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         delta = ScreenVectorToWorld(delta);
 
         var localDelta = GetParentTransform().InverseTransformVector(delta);
-        //print(localDelta);
-        transform.localPosition = oldLocalPos + localDelta;
+        MovingTarget.localPosition = oldLocalPos + localDelta;
 
         var nowX = transform.position.x;
         if (nowX < pocket.GetBorder())//臨界點

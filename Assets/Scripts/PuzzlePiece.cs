@@ -115,11 +115,19 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     public void BeforeMoving()
     {
-        //從Bucket裡清除
+
         if (connectedSet != null)
             connectedSet.BeforeMoving();
         else
+        {
+            //從Bucket裡清除
             ClearFromBucket();
+
+            //從Layer移除：這樣才能放到最上面
+            if(layerIndex!=Tool.NullIndex)
+                LayerMananger.GetInstance().Remove(this);
+        }
+            
     }
 
     public void AfterMoving()

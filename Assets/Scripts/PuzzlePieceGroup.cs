@@ -116,7 +116,7 @@ class LayerMananger
     //這裡還可以優化：不用全部更新
     public void RefreshLayerDepth()
     {
-        Debug.Log("Layer count=" + layers.Count);
+        //Debug.Log("Layer count=" + layers.Count);
         var nowY = 0.0f;
         for (var i = 0; i < layers.Count; ++i)
         {

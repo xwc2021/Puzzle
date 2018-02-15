@@ -112,7 +112,6 @@ public class PuzzlePieceGroup : MonoBehaviour {
                     temp.Add(new Vector2(0, 1));
 
                 p.NeighborOffset = temp.ToArray();
-                p.isConnected = new bool[temp.Count];
             }
         }
     }

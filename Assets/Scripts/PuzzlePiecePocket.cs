@@ -18,9 +18,6 @@ public class PuzzlePiecePocket : MonoBehaviour {
     Vector3 spanV3 = new Vector3(0,0, span);
     public void AddToPocket(int index,PuzzlePiece p,bool attach)
     {
-        if (pieceList.Contains(p))
-            return;
-
         //attach
         if (attach)
         {
@@ -63,9 +60,6 @@ public class PuzzlePiecePocket : MonoBehaviour {
 
     public void RemoveFromPocket(PuzzlePiece p)
     {
-        if (!pieceList.Contains(p))
-            return;
-
         pieceList.Remove(p);
         p.inPocket = false;
         p.nowIndexInPocket=Tool.NullIndex;

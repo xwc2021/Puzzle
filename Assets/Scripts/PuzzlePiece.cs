@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 {
-    public int bucketIndex = Tool.NullIndex;
-
     public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
@@ -19,12 +17,13 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         return transform;
     }
+
+    public int bucketIndex = Tool.NullIndex;
     public int xIndexInGroup;
     public int yIndexInGroup;
 
     //鄰接資訊
     public Vector2[] NeighborOffset;
-    public bool[] isConnected;
 
     public int nowIndexInPocket = Tool.NullIndex;
     public bool inPocket = false;
@@ -56,7 +55,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
         }
 
-        //和你相遇的時候，我單身，可是你不是
+        //相遇的時候，我單身，可是你不是
         if (IamSingle && YouAreSingle==false)
         {
             you.ConnectedGroup.Add(me);
@@ -64,7 +63,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
         }
 
-        //和我相遇的時候，你單身，可是我不是
+        //相遇的時候，你單身，可是我不是
         if (IamSingle = false && YouAreSingle)
         {
             me.ConnectedGroup.Add(you);
@@ -72,7 +71,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
         }
 
-        //我不是單身，你也不是，可是我們相遇了
+        //我們都不是單身，可是相遇了
         if (IamSingle = false && YouAreSingle == false)
         {
             me.ConnectedGroup.AddRange(you.ConnectedGroup.ToArray());

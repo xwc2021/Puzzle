@@ -35,52 +35,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         return b1 && b2; 
     }
 
-    public List<PuzzlePiece> ConnectedGroup;
-
-
-    void ConnetPiece(PuzzlePiece p)
-    {
-        var you = p;
-        var me = this;
-        var IamSingle = ConnectedGroup == null;
-        var YouAreSingle = you.ConnectedGroup == null;
-
-        //孤單的兩塊，彼此相遇了
-        if (IamSingle && YouAreSingle)
-        {
-            ConnectedGroup = new List<PuzzlePiece>();
-            ConnectedGroup.Add(me);
-            ConnectedGroup.Add(you);
-            you.ConnectedGroup = ConnectedGroup;
-            return;
-        }
-
-        //相遇的時候，我單身，可是你不是
-        if (IamSingle && YouAreSingle==false)
-        {
-            you.ConnectedGroup.Add(me);
-            me.ConnectedGroup = you.ConnectedGroup;
-            return;
-        }
-
-        //相遇的時候，你單身，可是我不是
-        if (IamSingle = false && YouAreSingle)
-        {
-            me.ConnectedGroup.Add(you);
-            you.ConnectedGroup = me.ConnectedGroup;
-            return;
-        }
-
-        //我們都不是單身，可是相遇了
-        if (IamSingle = false && YouAreSingle == false)
-        {
-            me.ConnectedGroup.AddRange(you.ConnectedGroup.ToArray());
-            you.ConnectedGroup = me.ConnectedGroup;
-            return;
-        }
-            
-    }
-
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
@@ -92,6 +46,52 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     Transform GetParentTransform()
     {
         return transform.parent;
+    }
+
+    public ConnectedSet connectedSet;
+
+    bool FindConnectLayerAndMerge()
+    {
+        return false;
+    }
+
+    public void ClearFromBucket()
+    {
+        //移出桶子
+        if (bucketIndex != Tool.NullIndex)
+            group.RemoveFromBucket(this);
+    }
+
+    public void BeforeMoving()
+    {
+        //從Bucket裡清除
+        if (connectedSet != null)
+            connectedSet.BeforeMoving();
+        else
+            ClearFromBucket();
+    }
+
+    public void AfterMoving()
+    {
+        if (connectedSet != null)
+        {
+            connectedSet.AfterMoving();
+        }
+        else
+        {
+            //取得所在Cell
+            int x, z;
+            group.GetAlignCell(transform.localPosition, out x, out z);
+
+            //(1)更新Bucket
+            group.InjectToBucket(this, x, z);
+
+            //(2)pos重新對齊Cell
+            bucketIndex = group.AlightPieceToCell(this, x, z);
+
+            //(3)找出可以連接的Layer
+            FindConnectLayerAndMerge();
+        }
     }
 
     Vector3 oldLocalPos;
@@ -106,9 +106,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         oldLocalPos = transform.localPosition;
         beginDragPos = Input.mousePosition;
 
-        //移出桶子
-        if (bucketIndex != Tool.NullIndex)
-            group.RemoveFromBucket(this);
+        BeforeMoving();
     }
 
     Vector3 ScreenVectorToWorld(Vector3 v)
@@ -172,8 +170,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         {
             transform.parent = group.transform;//放回group
 
-            //重新對齊Cell
-            bucketIndex = group.AlightPieceToBucket(this);
+            AfterMoving();
+            
         }
     }
 

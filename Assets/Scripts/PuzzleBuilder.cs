@@ -59,8 +59,9 @@ public class PuzzleBuilder : MonoBehaviour {
         target.InjectNeighborPiece();
         target.ResetPieceSize(ImageScaleX, ImageScaleZ);
         target.RecordPositionBeforeSouffleToPocket(W, H);
-        target.InitBucket(W, H);
+        target.InitBucketAndLayer(W, H);
         target.SouffleToPocket(W, H, puzzlePiecePocket);
+        target.CreateConnectedSet();
 
         target.transform.position = helpCorner.position;
     }

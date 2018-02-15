@@ -42,6 +42,19 @@ public class PuzzlePieceGroup : MonoBehaviour {
     const int rowCount = 4;
     const int columnCount = 6;
 
+    [SerializeField]
+    ConnectedSet templateConnectedSet;
+
+    public ConnectedSet CreateConnectedSet()
+    {
+        var cs =GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
+        var t = cs.transform;
+        t.parent = transform;
+        t.localPosition = Vector3.zero;
+
+        return cs;
+    }
+
     public PuzzlePiece nowMovingPiece;
 
     public PuzzlePiece[] map1D;
@@ -163,10 +176,14 @@ public class PuzzlePieceGroup : MonoBehaviour {
             pos1D[i] = map1D[i].transform.localPosition; 
     }
 
-    //桶子可以接水，這裡的桶子是用來接拼圖(記錄拼圖重疊的順序)
+    LayerMananger layerManager;
+
+    //桶子可以接水，這裡的桶子是用來接拼圖(空間索引)
     PuzzleBucket[] buckets;
-    public void InitBucket(int W, int H)
+    public void InitBucketAndLayer(int W, int H)
     {
+        layerManager = new LayerMananger();
+
         var count = W * H * pieceCount;
         buckets = new PuzzleBucket[count];
 
@@ -174,32 +191,38 @@ public class PuzzlePieceGroup : MonoBehaviour {
             buckets[i] = new PuzzleBucket();
     }
 
+    public void GetAlignCell(Vector3 localPos, out int xIndex, out int zIndex)
+    {
+        //找出xIndex,zIndex
+        float x = localPos.x;
+        float z = localPos.z;
+        xIndex = Tool.GetIndexOfCell(x, -pieceWidth);
+        zIndex = Tool.GetIndexOfCell(z, -pieceHeight);
+
+        xIndex = Mathf.Clamp(xIndex, 0, newColumnCount - 1);
+        zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
+        //print(xIndex + "," + zIndex);
+    }
+
     //因為拼圖的模型是從3D建模軟體來的
     //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     //可以透過pos1D取到每片拼圖真正的中心位置
-    public int AlightPieceToBucket(PuzzlePiece p)
+    public int AlightPieceToCell(PuzzlePiece p,int xIndex, int zIndex)
     {
-        //找出xIndex,zIndex
-        var target = p.transform;
-        var localPos = target.localPosition;
-        float x = localPos.x;
-        float z = localPos.z;
-        var xIndex =Tool.GetIndexOfCell(x, -pieceWidth);
-        var zIndex = Tool.GetIndexOfCell(z, -pieceHeight);
-
-        xIndex=Mathf.Clamp(xIndex, 0, newColumnCount - 1);
-        zIndex = Mathf.Clamp(zIndex, 0, newRowCount - 1);
-        //print(xIndex + "," + zIndex);
-
         var newIndex = GetNewIndex(xIndex, zIndex);
         //print(bucketIndex + "," + i);
 
         //更新拼圖pos
-        target.localPosition = pos1D[newIndex];
+        p.transform.localPosition = pos1D[newIndex];
 
-        //放到桶子裡
-        buckets[newIndex].Add(p);
         return newIndex;
+    }
+
+    public void InjectToBucket(PuzzlePiece p, int xIndex, int zIndex)
+    {
+        //放到桶子裡
+        var i = GetNewIndex(xIndex, zIndex);
+        buckets[i].Add(p);
     }
 
     public void RemoveFromBucket(PuzzlePiece p)

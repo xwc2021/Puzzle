@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 負責載入圖檔
+/// </summary>
 public class ImgLoader : MonoBehaviour {
 
     [SerializeField]

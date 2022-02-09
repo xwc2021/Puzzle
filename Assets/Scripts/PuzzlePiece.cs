@@ -37,16 +37,17 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     bool IsMyNeighbor(int x, int y, PuzzlePiece p)
     {
-        var b1=p.xIndexInGroup == (xIndexInGroup + x);
+        var b1 = p.xIndexInGroup == (xIndexInGroup + x);
         var b2 = p.yIndexInGroup == (yIndexInGroup + y);
-        return b1 && b2; 
+        return b1 && b2;
     }
 
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
     PuzzlePieceGroup group;
-    public void SetGroup(PuzzlePieceGroup group) {
+    public void SetGroup(PuzzlePieceGroup group)
+    {
         this.group = group;
     }
 
@@ -89,10 +90,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
     }
 
-    void FindConnectLayerAndMerge(int x,int y)
+    void FindConnectLayerAndMerge(int x, int y)
     {
         var set = new HashSet<IPuzzleLayer>();
-        FindConnectLayer(x, y,set);
+        FindConnectLayer(x, y, set);
 
         //沒有找到任何相鄰Layer
         if (set.Count == 0)
@@ -100,10 +101,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             LayerMananger.GetInstance().RefreshLayerDepth();
             return;
         }
-        
+
         //Merge Layer
         set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().Merge(set,group);
+        LayerMananger.GetInstance().Merge(set, group);
     }
 
     public void ClearFromBucket()
@@ -123,10 +124,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             ClearFromBucket();
 
             //從Layer移除：這樣才能放到最上面
-            if(layerIndex!=Tool.NullIndex)
+            if (layerIndex != Tool.NullIndex)
                 LayerMananger.GetInstance().Remove(this);
         }
-            
+
     }
 
     public void AfterMoving()
@@ -152,7 +153,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 LayerMananger.GetInstance().Add(this);
 
             //(3)找出可以相連的Layer
-            FindConnectLayerAndMerge(x,y);
+            FindConnectLayerAndMerge(x, y);
         }
     }
 
@@ -161,7 +162,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     bool onMoving = false;
 
     static Transform MovingTarget;
-    
+
     void StartMoving()
     {
         onMoving = true;
@@ -238,17 +239,18 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
         else
         {
-            if(connectedSet==null)
+            if (connectedSet == null)
                 transform.parent = group.transform;//放回group
-            
+
             AfterMoving();
-            
+
         }
     }
 
     static bool isMouseDown = false;
     //點選後移動
-    void OnMouseDown() {
+    void OnMouseDown()
+    {
         isMouseDown = true;
         StartMoving();
     }
@@ -288,7 +290,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             else
                 StopMoving();
         }
-            
+
     }
 
     //Just For Debug
@@ -300,13 +302,14 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         this.hHeight = hHeight;
     }
 
-    public void ResetUV (Vector2 uvScaleFactor, Vector2 uvOffsetFactor) {
+    public void ResetUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
+    {
         var mesh = GetComponent<MeshFilter>().mesh;
-        var uvs =mesh.uv;
+        var uvs = mesh.uv;
         for (var i = 0; i < uvs.Length; i++)
         {
             var uv = uvs[i];//這已經是複本了!!
-            uvs[i].Set(uv.x* uvScaleFactor.x+ uvOffsetFactor.x, uv.y* uvScaleFactor.y+ uvOffsetFactor.y);
+            uvs[i].Set(uv.x * uvScaleFactor.x + uvOffsetFactor.x, uv.y * uvScaleFactor.y + uvOffsetFactor.y);
         }
         mesh.uv = uvs;
     }
@@ -318,7 +321,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     }
 
     Vector3 oldScale;
-    public void MemoryOldScale (){ oldScale = transform.localScale; }
+    public void MemoryOldScale() { oldScale = transform.localScale; }
 
     public void SetScaleInPocket(Vector3 scale)
     {

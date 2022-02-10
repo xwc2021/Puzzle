@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// PuzzlePieceGroup底下可能會放PuzzlePiece或ConnectedSet(相連的Piece)
 public class PuzzlePieceGroup : MonoBehaviour
 {
 
@@ -15,7 +16,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     public ConnectedSet CreateConnectedSet(PuzzlePiece p)
     {
         //找出目前所在的Cell和原始的Cell的diff
-        var diff = pos1D[p.bucketIndex] - pos1D[p.indexInGroup];
+        var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.indexInGroup];
 
         var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
         var t = cs.transform;
@@ -32,7 +33,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     int newRowCount;
     int newColumnCount;
 
-    public void reRangeAndmarkPieceInfo(int W, int H)
+    public void reRangeAndMarkPieceInfo(int W, int H)
     {
         newColumnCount = W * columnCount;
         newRowCount = H * rowCount;
@@ -129,14 +130,17 @@ public class PuzzlePieceGroup : MonoBehaviour
             p.ResetSize(hPieceWidth, hPieceHeight);
     }
 
-    public Vector3[] pos1D;
+    // 因為拼圖的模型是從3D建模軟體來的
+    // 所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
+    // pieceRealCenter會記下每片拼圖真正的中心位置
+    public Vector3[] pieceRealCenter;
     public void RecordPositionBeforeSouffleToPocket(int W, int H)
     {
         var count = W * H * pieceCount;
-        pos1D = new Vector3[count];
+        pieceRealCenter = new Vector3[count];
 
         for (var i = 0; i < map1D.Length; ++i)
-            pos1D[i] = map1D[i].transform.localPosition;
+            pieceRealCenter[i] = map1D[i].transform.localPosition;
     }
 
     public PuzzlePiece[] GetBucketPieces(int column, int row)
@@ -150,7 +154,7 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     //桶子可以接水，這裡的桶子是用來裝拼圖(空間索引)
     PuzzleBucket[] buckets;
-    public void InitBucketAndLayer(int W, int H)
+    public void InitBucket(int W, int H)
     {
         var count = W * H * pieceCount;
         buckets = new PuzzleBucket[count];
@@ -172,21 +176,18 @@ public class PuzzlePieceGroup : MonoBehaviour
         //print(xIndex + "," + zIndex);
     }
 
-    //因為拼圖的模型是從3D建模軟體來的
-    //所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
-    //可以透過pos1D取到每片拼圖真正的中心位置
     public void AlightPieceToCell(PuzzlePiece piece, int xIndex, int yIndex)
     {
         var newIndex = GetNewIndex(xIndex, yIndex);
 
         //更新拼圖pos
-        piece.transform.localPosition = pos1D[newIndex];
+        piece.transform.localPosition = pieceRealCenter[newIndex];
     }
 
     public Vector3 GetDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
     {
         var newIndex = GetNewIndex(xIndex, yIndex);
-        return pos1D[newIndex] - localPos;
+        return pieceRealCenter[newIndex] - localPos;
     }
 
     public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
@@ -211,14 +212,18 @@ public class PuzzlePieceGroup : MonoBehaviour
         var count = W * H * pieceCount;
         var indexList = new List<int>();
 
+        // 產生號碼牌(index)
         for (var i = 0; i < count; ++i)
             indexList.Add(i);
 
         while (indexList.Count > 0)
         {
+            // 搖出號碼牌
             int i = Random.Range(0, indexList.Count);
             var removeIndex = indexList[i];
             indexList.RemoveAt(i);
+
+            // 把號碼牌對映的Piece加到口袋(Pocket)
             var nowPiece = map1D[removeIndex];
             puzzlePiecePocket.AddToPocket(0, nowPiece, true);
         }

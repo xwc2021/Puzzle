@@ -50,7 +50,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //對齊到位置上
         var t = p.transform;
         t.parent = transform;
-        t.localPosition = group.pos1D[p.indexInGroup];
+        t.localPosition = group.pieceRealCenter[p.indexInGroup];
     }
 
     public void BeforeMoving()
@@ -63,13 +63,13 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     static int bucketOffsetY;
     public void AfterMoving()
     {
-        //取得所在Cell
+        // 取得所在Cell
         var worldPos = pieceForAlign.transform.position;
         var localPosInGroup = group.transform.InverseTransformPoint(worldPos);
         int x, y;
         group.GetAlignCell(localPosInGroup, out x, out y);
 
-        //(1)pos重新對齊Cell
+        // (1)pos重新對齊Cell
         var diff = group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
         transform.localPosition += diff;
 

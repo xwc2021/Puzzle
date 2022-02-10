@@ -1913,7 +1913,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6757283956898285700}
-  - component: {fileID: 8581194241122026168}
+  - component: {fileID: 5054844795350245114}
   m_Layer: 0
   m_Name: PuzzlePieceGroup
   m_TagString: Untagged
@@ -1959,7 +1959,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
---- !u!114 &8581194241122026168
+--- !u!114 &5054844795350245114
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1968,7 +1968,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6757283956897993956}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b43afcc7a93d2c4d8df1af46837fc34, type: 3}
+  m_Script: {fileID: 11500000, guid: e59fad939ded4b64a8055b347f5cae6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   templateConnectedSet: {fileID: 0}

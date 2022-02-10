@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 744463323}
   - component: {fileID: 744463318}
   m_Layer: 0
-  m_Name: Bootstrap
+  m_Name: BootstrapSquare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

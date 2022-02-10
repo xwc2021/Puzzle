@@ -5,10 +5,11 @@ using UnityEngine;
 /// <summary>
 /// 負責載入圖檔
 /// </summary>
-public class ImgLoader : MonoBehaviour {
+public class Bootstrap : MonoBehaviour
+{
 
     [SerializeField]
-    string url = "https://p2.bahamut.com.tw/B/2KU/89/0001526689.JPG";
+    string url = "https://www.kpopn.com/upload/42ec1fe31f45347f8843.jpg";
 
     [SerializeField]
     PuzzleBuilder puzzleBuilder;
@@ -19,14 +20,22 @@ public class ImgLoader : MonoBehaviour {
     [SerializeField]
     PuzzlePiecePocket puzzlePiecePocket;
 
-    float ratio;
-    public float GetRatio() { return ratio; }
+    float imageRatio;
 
     Material m_Material;
     public Material GetMaterial() { return m_Material; }
 
+    static Bootstrap instance;
+    public static Bootstrap getInstance()
+    {
+        return instance;
+    }
+
     private void Awake()
     {
+        // 綁定
+        Bootstrap.instance = this;
+
         var m_Renderer = GetComponent<Renderer>();
         m_Material = m_Renderer.material;
     }
@@ -43,24 +52,28 @@ public class ImgLoader : MonoBehaviour {
             var tex = www.texture;
             //print($"{tex.width},{tex.height}");
             m_Material.mainTexture = tex;
-            ResetImageSize(tex.width, tex.height);
-            
+            setSquareSize(tex.width, tex.height);
+
             puzzleBuilder.Generate();
             puzzlePiecePocket.SetPosition();
-        } 
+        }
     }
 
-    void ResetImageSize(float w,float h)
+    void setSquareSize(float w, float h)
     {
-        //先把mesh縮放到圖片的長寬比
-        ratio = (float)w / h;
-        //transform.localScale = new Vector3(ratio, 1, 1);
+        // 先把mesh(原本是正方形)縮放到圖片的長寬比
+        imageRatio = (float)w / h;
+        // transform.localScale = new Vector3(imageRatio, 1, 1);
 
-        //有可能圖片大於銀幕，所以要再調整一次
-        var scale = screenAdapter.GetScaleToFitScreen(this);
-        transform.localScale = new Vector3(ratio* scale, 1, 1* scale);
+        // 圖片可能大於銀幕，所以要再scale一次
+        var scale = screenAdapter.getScaleToFitScreen(imageRatio);
+
+        // 再縮小
+        scale *= screenAdapter.addtionalScale;
+        transform.localScale = new Vector3(imageRatio * scale, 1, 1 * scale);
+
     }
 
-    public float GetImageScaleX() { return transform.localScale.x; }
-    public float GetImageScaleZ() { return transform.localScale.z; }
+    public float getImageScaleX() { return transform.localScale.x; }
+    public float getImageScaleZ() { return transform.localScale.z; }
 }

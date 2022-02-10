@@ -12,9 +12,6 @@ public class PuzzleBuilder : MonoBehaviour
     int H = 1;
 
     [SerializeField]
-    ImgLoader imgLoader;
-
-    [SerializeField]
     PuzzlePieceGroup puzzlePieceGroup;
 
     [SerializeField]
@@ -29,8 +26,8 @@ public class PuzzleBuilder : MonoBehaviour
     public void Generate()
     {
         var startPos = transform.position;
-        var ImageScaleX = imgLoader.GetImageScaleX();
-        var ImageScaleZ = imgLoader.GetImageScaleZ();
+        var ImageScaleX = Bootstrap.getInstance().getImageScaleX();
+        var ImageScaleZ = Bootstrap.getInstance().getImageScaleZ();
         var UnitSize = ScreenAdapter.UnitSize;
 
         Vector3 offsetX = new Vector3(ImageScaleX * UnitSize / W, 0.0f, 0.0f);
@@ -68,7 +65,7 @@ public class PuzzleBuilder : MonoBehaviour
     {
         var group = GameObject.Instantiate<PuzzlePieceGroup>(puzzlePieceGroup, pos, rot);
         group.transform.localScale = scale;
-        group.setPieceTexture(imgLoader.GetMaterial().mainTexture);
+        group.setPieceTexture(Bootstrap.getInstance().GetMaterial().mainTexture);
         group.resetPieceUV(uvScaleFactor, uvOffsetFactor);
         group.transfer(target);
     }

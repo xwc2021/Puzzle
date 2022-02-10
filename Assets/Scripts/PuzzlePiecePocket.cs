@@ -89,7 +89,7 @@ public class PuzzlePiecePocket : MonoBehaviour
     {
         var offset = -1;
         var pos = transform.position;
-        pos.Set(ScreenAdapter.GetHalfScreenWidth() + offset, pos.y, pos.z);
+        pos.Set(ScreenAdapter.getHalfScreenWidth() + offset, pos.y, pos.z);
         transform.position = pos;
     }
 }

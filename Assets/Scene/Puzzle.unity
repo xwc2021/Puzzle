@@ -154,7 +154,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   W: 2
   H: 2
-  imgLoader: {fileID: 744463318}
   puzzlePieceGroup: {fileID: 8581194241122026168, guid: 17156dddd8c66084c8f19ad777b0fb5b,
     type: 3}
   target: {fileID: 1493010836}
@@ -240,10 +239,10 @@ GameObject:
   - component: {fileID: 744463321}
   - component: {fileID: 744463320}
   - component: {fileID: 744463319}
-  - component: {fileID: 744463318}
   - component: {fileID: 744463323}
+  - component: {fileID: 744463318}
   m_Layer: 0
-  m_Name: ImgLoader
+  m_Name: Bootstrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -258,7 +257,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 744463317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9c61abdc4221d3428ce60d32a65c1af, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b367ac399b44314c97274a38e88a34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   url: https://kairos.news/wp-content/uploads/2015/10/i24o.jpg
@@ -355,7 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc301079f6f758b4c972a146bcef0def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 0.8
+  addtionalScale: 0.6
 --- !u!1 &826004115
 GameObject:
   m_ObjectHideFlags: 0

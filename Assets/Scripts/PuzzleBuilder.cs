@@ -26,12 +26,6 @@ public class PuzzleBuilder : MonoBehaviour
     [SerializeField]
     PuzzlePiecePocket puzzlePiecePocket;
 
-    // Use this for initialization
-    void Awake()
-    {
-
-    }
-
     public void Generate()
     {
         var startPos = transform.position;
@@ -47,6 +41,7 @@ public class PuzzleBuilder : MonoBehaviour
         var uvOffsetX = 1.0f / W;
         var uvOffsetY = 1.0f / H;
 
+        // 目前的做法，是用W*H個6*4的拼圖組成1個大拼圖
         for (int y = 0; y < H; y++)
         {
             for (int x = 0; x < W; x++)
@@ -62,7 +57,7 @@ public class PuzzleBuilder : MonoBehaviour
         target.ResetPieceSize(ImageScaleX, ImageScaleZ);
         target.RecordPositionBeforeSouffleToPocket(W, H);
         target.InitBucketAndLayer(W, H);
-        target.SouffleToPocket(W, H, puzzlePiecePocket);
+        // target.SouffleToPocket(W, H, puzzlePiecePocket);
 
         target.transform.position = helpCorner.position;
     }

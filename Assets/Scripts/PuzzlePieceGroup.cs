@@ -45,7 +45,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         //口口  g0 g1
         //把這6個group，重新映射到一個一維陣列
         var pieces = GetComponentsInChildren<PuzzlePiece>();
-        var group = 0;
+        var index = 0;
         for (var h = 0; h < H; ++h)
         {
             for (var w = 0; w < W; ++w)
@@ -54,20 +54,18 @@ public class PuzzlePieceGroup : MonoBehaviour
                 {
                     for (var x = 0; x < columnCount; ++x)
                     {
-                        var index = GetIndex(x, y, group);
                         var nX = x + w * columnCount;
                         var nY = y + h * rowCount;
                         var newIndex = GetNewIndex(nX, nY);
-                        //print(nX + "," + nY);
                         var nowPiece = map1D[newIndex] = pieces[index];
-                        nowPiece.name = "(" + nX + "," + nY + ")";//rename
+                        nowPiece.name = "(" + nX + "," + nY + "):" + index;//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;
                         nowPiece.indexInGroup = newIndex;
 
+                        ++index; // 1個1個取出就行了
                     }
                 }
-                ++group;//走完24片
             }
         }
     }
@@ -99,12 +97,6 @@ public class PuzzlePieceGroup : MonoBehaviour
                 p.NeighborOffset = temp.ToArray();
             }
         }
-    }
-
-    //Before ReRangePiece
-    int GetIndex(int column, int row, int group)
-    {
-        return column + row * columnCount + group * pieceCount;
     }
 
     //After ReRangePiece

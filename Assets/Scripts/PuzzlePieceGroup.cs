@@ -55,8 +55,8 @@ public class PuzzlePieceGroup : MonoBehaviour
                     {
                         var nX = x + w * columnCount;
                         var nY = y + h * rowCount;
-                        var nowPiece = map1D[index] = pieces[index];
                         var newIndex = GetNewIndex(nX, nY);
+                        var nowPiece = map1D[newIndex] = pieces[index];
                         nowPiece.name = "(" + nX + "," + nY + "):" + index + ',' + newIndex;//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;

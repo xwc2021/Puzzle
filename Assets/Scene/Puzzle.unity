@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7158324dfa2ac634a9788dea961ae3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  W: 1
-  H: 1
+  W: 2
+  H: 2
   imgLoader: {fileID: 744463318}
   puzzlePieceGroup: {fileID: 8581194241122026168, guid: 17156dddd8c66084c8f19ad777b0fb5b,
     type: 3}

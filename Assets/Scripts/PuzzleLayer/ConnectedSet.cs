@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // 已經連在一起的Puzzle
@@ -13,7 +12,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     {
         return pieces.Count;
     }
-    public int layerIndex = Tool.NullIndex;
+    public int layerIndex = PuzzleBucket.NullIndex;
     public int GetLayerIndex()
     {
         return layerIndex;

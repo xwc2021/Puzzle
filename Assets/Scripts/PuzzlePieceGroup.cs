@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // PuzzlePieceGroup底下可能會放PuzzlePiece或ConnectedSet(相連的Piece)
 public class PuzzlePieceGroup : MonoBehaviour
 {
-
     const int pieceCount = 24;
     const int rowCount = 4;
     const int columnCount = 6;
@@ -56,7 +54,7 @@ public class PuzzlePieceGroup : MonoBehaviour
                     {
                         var nX = x + w * columnCount;
                         var nY = y + h * rowCount;
-                        var newIndex = GetNewIndex(nX, nY);
+                        var newIndex = GetIndex1D(nX, nY);
                         var nowPiece = map1D[newIndex] = pieces[index];
                         nowPiece.name = "(" + nX + "," + nY + "):" + index + ',' + newIndex;//rename
                         nowPiece.xIndexInGroup = nX;
@@ -79,7 +77,7 @@ public class PuzzlePieceGroup : MonoBehaviour
             for (var x = 0; x < newColumnCount; ++x)
             {
                 temp.Clear();
-                var index = GetNewIndex(x, y);
+                var index = GetIndex1D(x, y);
                 var p = map1D[index];
 
                 if (IsValidIndex(x - 1, y))
@@ -100,7 +98,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     }
 
     //After ReRangePiece
-    int GetNewIndex(int column, int row)
+    int GetIndex1D(int column, int row)
     {
         return column + row * newColumnCount;
     }
@@ -134,7 +132,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     // 所以每片拼圖的中心位置，不是剛好位移一個(-hPieceWidth, 0,-hPieceHeight)
     // pieceRealCenter會記下每片拼圖真正的中心位置
     public Vector3[] pieceRealCenter;
-    public void RecordPositionBeforeSouffleToPocket(int W, int H)
+    public void recordPieceRealCenter(int W, int H)
     {
         var count = W * H * pieceCount;
         pieceRealCenter = new Vector3[count];
@@ -148,7 +146,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         if (!IsValidIndex(column, row))
             return null;
 
-        var i = GetNewIndex(column, row);
+        var i = GetIndex1D(column, row);
         return buckets[i].GetTotal();
     }
 
@@ -168,8 +166,8 @@ public class PuzzlePieceGroup : MonoBehaviour
         //找出xIndex,zIndex
         float x = localPos.x;
         float z = localPos.z;
-        xIndex = Tool.GetIndexOfCell(x, -pieceWidth);
-        yIndex = Tool.GetIndexOfCell(z, -pieceHeight);
+        xIndex = PuzzleBucket.GetIndexOfCell(x, -pieceWidth);
+        yIndex = PuzzleBucket.GetIndexOfCell(z, -pieceHeight);
 
         xIndex = Mathf.Clamp(xIndex, 0, newColumnCount - 1);
         yIndex = Mathf.Clamp(yIndex, 0, newRowCount - 1);
@@ -178,7 +176,7 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public void AlightPieceToCell(PuzzlePiece piece, int xIndex, int yIndex)
     {
-        var newIndex = GetNewIndex(xIndex, yIndex);
+        var newIndex = GetIndex1D(xIndex, yIndex);
 
         //更新拼圖pos
         piece.transform.localPosition = pieceRealCenter[newIndex];
@@ -186,25 +184,25 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public Vector3 GetDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
     {
-        var newIndex = GetNewIndex(xIndex, yIndex);
+        var newIndex = GetIndex1D(xIndex, yIndex);
         return pieceRealCenter[newIndex] - localPos;
     }
 
     public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
     {
         //放到桶子裡
-        var i = GetNewIndex(xIndex, yIndex);
+        var i = GetIndex1D(xIndex, yIndex);
         p.bucketIndex = i;
         buckets[i].Add(p);
     }
 
     public void RemoveFromBucket(PuzzlePiece p)
     {
-        if (p.bucketIndex == Tool.NullIndex)
+        if (p.bucketIndex == PuzzleBucket.NullIndex)
             return;
 
         buckets[p.bucketIndex].Remove(p);//這裡是O(n) 
-        p.bucketIndex = Tool.NullIndex;
+        p.bucketIndex = PuzzleBucket.NullIndex;
     }
 
     public void SouffleToPocket(int W, int H, PuzzlePiecePocket puzzlePiecePocket)

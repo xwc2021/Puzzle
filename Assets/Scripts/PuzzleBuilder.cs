@@ -51,11 +51,11 @@ public class PuzzleBuilder : MonoBehaviour
             }
         }
 
-        //一些前置作業
+        // 一些前置作業
         target.reRangeAndMarkPieceInfo(W, H);
         target.InjectNeighborPieceInfo();
         target.setDebugInfoPieceSize(ImageScaleX, ImageScaleZ);
-        target.RecordPositionBeforeSouffleToPocket(W, H);
+        target.recordPieceRealCenter(W, H);
         target.InitBucket(W, H);
         target.SouffleToPocket(W, H, puzzlePiecePocket);
 

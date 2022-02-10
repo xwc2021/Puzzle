@@ -51,7 +51,7 @@ public class PuzzlePiecePocket : MonoBehaviour
         //       I    一
         //口    一     I span
         var hSpan = 0.5f * span;
-        var yIndex = Tool.GetIndexOfCell(y - hSpan, span);
+        var yIndex = PuzzleBucket.GetIndexOfCell(y - hSpan, span);
         //如果本來不在Pocket裡，可以放到尾巴，所以會多1個位置可放
         yIndex = Mathf.Clamp(yIndex, 0, inPocket ? pieceList.Count - 1 : pieceList.Count);
         return yIndex;
@@ -61,7 +61,7 @@ public class PuzzlePiecePocket : MonoBehaviour
     {
         pieceList.Remove(p);
         p.inPocket = false;
-        p.nowIndexInPocket = Tool.NullIndex;
+        p.nowIndexInPocket = PuzzleBucket.NullIndex;
         p.ResetScale();
 
         RefreshPocket();

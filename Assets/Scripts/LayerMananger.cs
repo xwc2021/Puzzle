@@ -86,7 +86,7 @@ public class LayerMananger
     {
         var i = layer.GetLayerIndex();
         layers.RemoveAt(i);
-        layer.SetLayerIndex(Tool.NullIndex);
+        layer.SetLayerIndex(PuzzleBucket.NullIndex);
 
         RefreshLayerDepth();
     }

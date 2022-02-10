@@ -56,12 +56,11 @@ public class PuzzlePieceGroup : MonoBehaviour
                     {
                         var nX = x + w * columnCount;
                         var nY = y + h * rowCount;
-                        var newIndex = GetNewIndex(nX, nY);
-                        var nowPiece = map1D[newIndex] = pieces[index];
+                        var nowPiece = map1D[index] = pieces[index];
                         nowPiece.name = "(" + nX + "," + nY + "):" + index;//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;
-                        nowPiece.indexInGroup = newIndex;
+                        nowPiece.indexInGroup = index;
 
                         ++index; // 1個1個取出就行了
                     }

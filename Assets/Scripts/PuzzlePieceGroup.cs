@@ -32,18 +32,17 @@ public class PuzzlePieceGroup : MonoBehaviour
     int newRowCount;
     int newColumnCount;
 
-    public void ReRangePiece(int W, int H)
+    public void reRangeAndmarkPieceInfo(int W, int H)
     {
         newColumnCount = W * columnCount;
         newRowCount = H * rowCount;
         map1D = new PuzzlePiece[W * H * pieceCount];
 
-        //ReRangePiece前
         //如果W=2 H=3，會有6個group
         //口口  g4 g5
         //口口  g2 g3
         //口口  g0 g1
-        //把這6個group，重新映射到一個一維陣列
+        //把這6個group，映射到一個一維陣列，並標名(nX,nY):index
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         var index = 0;
         for (var h = 0; h < H; ++h)
@@ -57,10 +56,11 @@ public class PuzzlePieceGroup : MonoBehaviour
                         var nX = x + w * columnCount;
                         var nY = y + h * rowCount;
                         var nowPiece = map1D[index] = pieces[index];
-                        nowPiece.name = "(" + nX + "," + nY + "):" + index;//rename
+                        var newIndex = GetNewIndex(nX, nY);
+                        nowPiece.name = "(" + nX + "," + nY + "):" + index + ',' + newIndex;//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;
-                        nowPiece.indexInGroup = index;
+                        nowPiece.indexInGroup = newIndex;
 
                         ++index; // 1個1個取出就行了
                     }
@@ -70,7 +70,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     }
 
     //建立相鄰資訊
-    public void InjectNeighborPiece()
+    public void InjectNeighborPieceInfo()
     {
         var temp = new List<Vector2>();
         for (var y = 0; y < newRowCount; ++y)
@@ -117,7 +117,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     float hPieceWidth;
     float hPieceHeight;
 
-    public void ResetPieceSize(float ImageScaleX, float ImageScaleZ)
+    public void setDebugInfoPieceSize(float ImageScaleX, float ImageScaleZ)
     {
         pieceWidth = ImageScaleX * ScreenAdapter.UnitSize / newColumnCount;
         pieceHeight = ImageScaleZ * ScreenAdapter.UnitSize / newRowCount;

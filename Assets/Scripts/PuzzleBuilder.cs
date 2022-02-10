@@ -52,9 +52,9 @@ public class PuzzleBuilder : MonoBehaviour
         }
 
         //一些前置作業
-        target.ReRangePiece(W, H);
-        target.InjectNeighborPiece();
-        target.ResetPieceSize(ImageScaleX, ImageScaleZ);
+        target.reRangeAndmarkPieceInfo(W, H);
+        target.InjectNeighborPieceInfo();
+        target.setDebugInfoPieceSize(ImageScaleX, ImageScaleZ);
         target.RecordPositionBeforeSouffleToPocket(W, H);
         target.InitBucketAndLayer(W, H);
         target.SouffleToPocket(W, H, puzzlePiecePocket);

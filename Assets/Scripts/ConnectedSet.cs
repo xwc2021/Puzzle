@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//已經連在一起的Puzzle
+// 已經連在一起的Puzzle
 public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 {
     //拉動時的參考Piece
@@ -64,13 +64,13 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     public void AfterMoving()
     {
         //取得所在Cell
-        var worldPos =pieceForAlign.transform.position;
-        var localPosInGroup =group.transform.InverseTransformPoint(worldPos);
+        var worldPos = pieceForAlign.transform.position;
+        var localPosInGroup = group.transform.InverseTransformPoint(worldPos);
         int x, y;
         group.GetAlignCell(localPosInGroup, out x, out y);
 
         //(1)pos重新對齊Cell
-        var diff =group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
+        var diff = group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
         transform.localPosition += diff;
 
         //因為ConnectedSet不一定會剛好和Group對齊
@@ -92,11 +92,9 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         FindConnectLayerAndMerge(x, y);
     }
 
-    void FindConnectLayerAndMerge(int x,int y)
+    void FindConnectLayerAndMerge(int x, int y)
     {
         var set = new HashSet<IPuzzleLayer>();
-
-        
 
         foreach (var p in pieces)
         {
@@ -105,20 +103,20 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
                 var targetX = p.xIndexInGroup + bucketOffsetX;
                 var targetY = p.yIndexInGroup + bucketOffsetY;
 
-                if(group.IsValidIndex(targetX,targetY))
+                if (group.IsValidIndex(targetX, targetY))
                     p.FindConnectLayer(targetX, targetY, set);
             }
             else
                 p.FindConnectLayer(x, y, set);
         }
-            
+
         //沒有找到任何相鄰Layer
         if (set.Count == 0)
         {
             LayerMananger.GetInstance().RefreshLayerDepth();
             return;
         }
-        
+
         //Merge Layer
         set.Add(this);//把自己也加進去
         LayerMananger.GetInstance().Merge(set, group);

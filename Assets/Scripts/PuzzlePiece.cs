@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 單塊拚圖
 public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 {
     public int GetPiecesCount()
@@ -314,10 +315,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         mesh.uv = uvs;
     }
 
-    public void SetMainTextrue(Material m)
+    public void SetMainTextrue(Texture tex)
     {
         var render = GetComponent<Renderer>();
-        render.material.mainTexture = m.mainTexture;
+        render.material.mainTexture = tex;
     }
 
     Vector3 oldScale;

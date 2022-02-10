@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 畫面右方的口袋
 public class PuzzlePiecePocket : MonoBehaviour
 {
 

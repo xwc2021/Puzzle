@@ -233,15 +233,24 @@ public class PuzzlePieceGroup : MonoBehaviour
         }
     }
 
+    public void setPieceTexture(Texture tex)
+    {
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        foreach (var p in pieces)
+        {
+            p.SetMainTextrue(tex);
+        }
+    }
 
-    public void ResetUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
+
+    public void resetPieceUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
     {
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         foreach (var p in pieces)
             p.ResetUV(uvScaleFactor, uvOffsetFactor);
     }
 
-    public void Give(PuzzlePieceGroup target)
+    public void transfer(PuzzlePieceGroup target)
     {
         //綁定Group
         var pieces = GetComponentsInChildren<PuzzlePiece>();

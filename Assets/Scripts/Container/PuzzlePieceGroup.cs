@@ -118,8 +118,8 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public void setDebugInfoPieceSize(float ImageScaleX, float ImageScaleZ)
     {
-        pieceWidth = ImageScaleX * ScreenAdapter.UnitSize / newColumnCount;
-        pieceHeight = ImageScaleZ * ScreenAdapter.UnitSize / newRowCount;
+        pieceWidth = ImageScaleX * ScreenAdapter.UnitSquareSize / newColumnCount;
+        pieceHeight = ImageScaleZ * ScreenAdapter.UnitSquareSize / newRowCount;
         hPieceWidth = 0.5f * pieceWidth;
         hPieceHeight = 0.5f * pieceHeight;
         var pieces = GetComponentsInChildren<PuzzlePiece>();

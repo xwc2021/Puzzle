@@ -182,7 +182,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         //1個ScreenAdapter.UnitSize就是Screen.height
         v = v / Screen.height;
-        v = v * ScreenAdapter.UnitSize;
+        v = v * ScreenAdapter.UnitSquareSize;
         return v;
     }
 

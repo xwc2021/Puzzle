@@ -22,7 +22,8 @@ public class ScreenAdapter : MonoBehaviour
         return (float)Screen.width / Screen.height;
     }
 
-    public static float UnitSize
+    // 還沒載入圖片前，BootstrapSquare物件的大小
+    public static float UnitSquareSize
     {
         // CameraSize的2倍
         get => Camera.main.orthographicSize * 2;
@@ -30,6 +31,6 @@ public class ScreenAdapter : MonoBehaviour
 
     public static float getHalfScreenWidth()
     {
-        return 0.5f * UnitSize * getScreenRatio();
+        return 0.5f * UnitSquareSize * getScreenRatio();
     }
 }

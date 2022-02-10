@@ -28,10 +28,10 @@ public class PuzzleBuilder : MonoBehaviour
         var startPos = transform.position;
         var ImageScaleX = Bootstrap.getInstance().getImageScaleX();
         var ImageScaleZ = Bootstrap.getInstance().getImageScaleZ();
-        var UnitSize = ScreenAdapter.UnitSize;
+        var UnitSquareSize = ScreenAdapter.UnitSquareSize;
 
-        Vector3 offsetX = new Vector3(ImageScaleX * UnitSize / W, 0.0f, 0.0f);
-        Vector3 offsetY = new Vector3(0.0f, ImageScaleZ * UnitSize / H, 0.0f);
+        Vector3 offsetX = new Vector3(ImageScaleX * UnitSquareSize / W, 0.0f, 0.0f);
+        Vector3 offsetY = new Vector3(0.0f, ImageScaleZ * UnitSquareSize / H, 0.0f);
 
         Vector3 scale = new Vector3(ImageScaleX / W, 1.0f, ImageScaleZ / H);
         Vector2 uvScaleFactor = new Vector2(1.0f / W, 1.0f / H);

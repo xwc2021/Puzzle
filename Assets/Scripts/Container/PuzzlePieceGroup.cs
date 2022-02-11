@@ -14,7 +14,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     public ConnectedSet CreateConnectedSet(PuzzlePiece p)
     {
         //找出目前所在的Cell和原始的Cell的diff
-        var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.indexInGroup];
+        var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.index1DInGroup];
 
         var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
         var t = cs.transform;
@@ -59,7 +59,7 @@ public class PuzzlePieceGroup : MonoBehaviour
                         nowPiece.name = "(" + nX + "," + nY + "):" + index + ',' + newIndex;//rename
                         nowPiece.xIndexInGroup = nX;
                         nowPiece.yIndexInGroup = nY;
-                        nowPiece.indexInGroup = newIndex;
+                        nowPiece.index1DInGroup = newIndex;
 
                         ++index; // 1個1個取出就行了
                     }

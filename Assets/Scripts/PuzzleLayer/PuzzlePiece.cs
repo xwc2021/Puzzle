@@ -28,7 +28,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     public int xIndexInGroup;
     public int yIndexInGroup;
-    public int indexInGroup;
+    public int index1DInGroup;
 
     //鄰接資訊
     public Vector2[] NeighborOffset;

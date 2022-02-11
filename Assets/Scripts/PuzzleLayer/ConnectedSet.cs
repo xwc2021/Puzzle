@@ -49,7 +49,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //對齊到位置上
         var t = p.transform;
         t.parent = transform;
-        t.localPosition = group.pieceRealCenter[p.indexInGroup];
+        t.localPosition = group.pieceRealCenter[p.index1DInGroup];
     }
 
     public void BeforeMoving()

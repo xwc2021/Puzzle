@@ -5,6 +5,7 @@ using UnityEngine;
 // 畫面右方的口袋
 public class PuzzlePiecePocket : MonoBehaviour
 {
+    public readonly static int NullIndex = -1;
 
     [SerializeField]
     Transform border;
@@ -61,7 +62,7 @@ public class PuzzlePiecePocket : MonoBehaviour
     {
         pieceList.Remove(p);
         p.inPocket = false;
-        p.nowIndexInPocket = PuzzleBucket.NullIndex;
+        p.nowIndexInPocket = PuzzlePiecePocket.NullIndex;
         p.ResetScale();
 
         RefreshPocket();

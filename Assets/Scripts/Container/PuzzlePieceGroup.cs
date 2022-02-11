@@ -83,7 +83,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         //口口  G4 G5
         //口口  G2 G3
         //口口  G0 G1
-        //把這6個Group的piece，映射到一個一維陣列，並標名(nX,nY):index
+        //把這6個Group的piece，重新映射到一個一維陣列，並標名(nX,nY):index
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         var index = 0;
         for (var h = 0; h < H; ++h)

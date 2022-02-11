@@ -9,7 +9,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         return 1;
     }
-    public int layerIndex = PuzzleBucket.NullIndex;
+    public int layerIndex = LayerMananger.NullIndex;
     public int GetLayerIndex()
     {
         return layerIndex;
@@ -33,7 +33,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     //鄰接資訊
     public Vector2[] NeighborOffset;
 
-    public int nowIndexInPocket = PuzzleBucket.NullIndex;
+    public int nowIndexInPocket = PuzzlePiecePocket.NullIndex;
     public bool inPocket = false;
 
     bool IsMyNeighbor(int x, int y, PuzzlePiece p)
@@ -125,7 +125,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             ClearFromBucket();
 
             //從Layer移除：這樣才能放到最上面
-            if (layerIndex != PuzzleBucket.NullIndex)
+            if (layerIndex != LayerMananger.NullIndex)
                 LayerMananger.GetInstance().Remove(this);
         }
 
@@ -150,7 +150,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             group.InjectToBucket(this, x, y);
 
             //還不屬於Layer
-            if (GetLayerIndex() == PuzzleBucket.NullIndex)
+            if (GetLayerIndex() == LayerMananger.NullIndex)
                 LayerMananger.GetInstance().Add(this);
 
             //(3)找出可以相連的Layer

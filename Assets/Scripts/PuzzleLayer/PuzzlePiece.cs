@@ -132,13 +132,13 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         //沒有找到任何相鄰Layer
         if (set.Count == 0)
         {
-            LayerMananger.GetInstance().RefreshLayerDepth();
+            LayerMananger.GetInstance().refreshLayerDepth();
             return;
         }
 
         //Merge Layer
         set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().Merge(set, PuzzlePieceGroup.Instance);
+        LayerMananger.GetInstance().merge(set, PuzzlePieceGroup.Instance);
     }
 
     public void ClearFromBucket()
@@ -159,7 +159,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
             //從Layer移除：這樣才能放到最上面
             if (layerIndex != Tool.NullIndex)
-                LayerMananger.GetInstance().Remove(this);
+                LayerMananger.GetInstance().remove(this);
         }
 
     }
@@ -185,7 +185,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
             //還不屬於Layer
             if (GetLayerIndex() == Tool.NullIndex)
-                LayerMananger.GetInstance().Add(this);
+                LayerMananger.GetInstance().add(this);
 
             //(3)找出可以相連的Layer
             FindConnectLayerAndMerge(x, y);

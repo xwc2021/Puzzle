@@ -4,15 +4,6 @@ using UnityEngine;
 // 負責深度排序的工作
 public class LayerMananger
 {
-    float span = 1;
-
-    List<IPuzzleLayer> layers;
-
-    private LayerMananger()
-    {
-        layers = new List<IPuzzleLayer>();
-    }
-
     static LayerMananger instance;
     public static LayerMananger GetInstance()
     {
@@ -22,33 +13,50 @@ public class LayerMananger
         return instance;
     }
 
-    public void Update(IPuzzleLayer layer)
+    float layerDepthOffset = 1;
+
+    List<IPuzzleLayer> layers;
+    private LayerMananger()
     {
-        var i = layer.GetLayerIndex();
-        layers.RemoveAt(i);
-
-        //從下往上更新會比較快
-        UpToFit(layer);
-
-        RefreshLayerDepth();
+        layers = new List<IPuzzleLayer>();
     }
 
-    public void Add(IPuzzleLayer layer)
+    public void add(IPuzzleLayer layer)
     {
         var startIndex = layers.Count - 1;
 
         if (startIndex >= 0)
-            DownToFit(layer, startIndex);
+            upToDownInsert(layer, startIndex);
         else
         {
             layer.SetLayerIndex(0);
             layers.Add(layer);
         }
 
-        RefreshLayerDepth();
+        refreshLayerDepth();
     }
 
-    void UpToFit(IPuzzleLayer layer)
+    public void remove(IPuzzleLayer layer)
+    {
+        var i = layer.GetLayerIndex();
+        layers.RemoveAt(i);
+        layer.SetLayerIndex(Tool.NullIndex);
+
+        refreshLayerDepth();
+    }
+
+    public void update(IPuzzleLayer layer)
+    {
+        var i = layer.GetLayerIndex();
+        layers.RemoveAt(i);
+
+        //從下往上插入會比較快
+        dowToUpInsert(layer);
+
+        refreshLayerDepth();
+    }
+
+    void dowToUpInsert(IPuzzleLayer layer)
     {
         for (var i = 0; i < layers.Count; ++i)
         {
@@ -63,7 +71,7 @@ public class LayerMananger
         layers.Insert(layers.Count, layer);
     }
 
-    void DownToFit(IPuzzleLayer layer, int startIndex)
+    void upToDownInsert(IPuzzleLayer layer, int startIndex)
     {
         for (var i = startIndex; i >= 0; --i)
         {
@@ -81,17 +89,8 @@ public class LayerMananger
         layers.Insert(head, layer);
     }
 
-    public void Remove(IPuzzleLayer layer)
-    {
-        var i = layer.GetLayerIndex();
-        layers.RemoveAt(i);
-        layer.SetLayerIndex(Tool.NullIndex);
-
-        RefreshLayerDepth();
-    }
-
     //這裡還可以優化：不用全部更新
-    public void RefreshLayerDepth()
+    public void refreshLayerDepth()
     {
         //Debug.Log("Layer count=" + layers.Count);
         var nowY = 0.0f;
@@ -103,11 +102,11 @@ public class LayerMananger
             var pos = t.localPosition;
             t.localPosition = new Vector3(pos.x, nowY, pos.z);
 
-            nowY += span;
+            nowY += layerDepthOffset;
         }
     }
 
-    public void Merge(HashSet<IPuzzleLayer> set, PuzzlePieceGroup group)
+    public void merge(HashSet<IPuzzleLayer> set, PuzzlePieceGroup group)
     {
         //找出含有最多piece的Layer，把所有piece都給它
         var layers = new List<IPuzzleLayer>(set);
@@ -140,10 +139,10 @@ public class LayerMananger
             {
                 var L = layers[i];
                 cs.Add(L as PuzzlePiece);
-                layerManager.Remove(L);
+                layerManager.remove(L);
             }
 
-            layerManager.Add(cs);
+            layerManager.add(cs);
             return;
         }
 
@@ -156,16 +155,16 @@ public class LayerMananger
             if (L.GetPiecesCount() == 1)
             {
                 nowCS.Add(L as PuzzlePiece);
-                layerManager.Remove(L);
+                layerManager.remove(L);
             }
             else
             {
                 var cs = L as ConnectedSet;
                 nowCS.Add(cs);
-                layerManager.Remove(L);
+                layerManager.remove(L);
                 Object.Destroy(cs.gameObject);//刪除connectedSet
             }
         }
-        layerManager.Update(theChosenOne);
+        layerManager.update(theChosenOne);
     }
 }

@@ -112,12 +112,12 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //沒有找到任何相鄰Layer
         if (set.Count == 0)
         {
-            LayerMananger.GetInstance().RefreshLayerDepth();
+            LayerMananger.GetInstance().refreshLayerDepth();
             return;
         }
 
         //Merge Layer
         set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().Merge(set, group);
+        LayerMananger.GetInstance().merge(set, group);
     }
 }

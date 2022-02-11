@@ -29,6 +29,7 @@ public class PuzzleBuilder : MonoBehaviour
         PuzzlePieceGroup.Instance = target;
         PuzzlePiecePocket.Instance = puzzlePiecePocket;
 
+        // 準備生成Group需要的資料
         var startPos = transform.position;
         var ImageScaleX = Bootstrap.getInstance().getImageScaleX();
         var ImageScaleZ = Bootstrap.getInstance().getImageScaleZ();
@@ -42,11 +43,11 @@ public class PuzzleBuilder : MonoBehaviour
         var uvOffsetX = 1.0f / W;
         var uvOffsetY = 1.0f / H;
 
-        //如果W=2 H=3，會有6個Group
-        //口口  G4 G5
-        //口口  G2 G3
-        //口口  G0 G1
-        //把這6個Group的piece transfer到1個group裡
+        // 如果W=2 H=3，會有6個Group
+        // 口口  G4 G5
+        // 口口  G2 G3
+        // 口口  G0 G1
+        // 把這6個Group的piece transfer到target
         for (int y = 0; y < H; y++)
         {
             for (int x = 0; x < W; x++)

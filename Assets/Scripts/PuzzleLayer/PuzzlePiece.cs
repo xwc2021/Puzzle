@@ -46,12 +46,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
-    PuzzlePieceGroup group;
-    public void SetGroup(PuzzlePieceGroup group)
-    {
-        this.group = group;
-    }
-
     Transform GetParentTransform()
     {
         //不管現在的paretn是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
@@ -67,7 +61,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             var offset = NeighborOffset[i];
             var offsetX = (int)offset.x;
             var offsetY = (int)offset.y;
-            var Pieces = group.GetBucketPieces(x + offsetX, y + offsetY);
+            var Pieces = PuzzlePieceGroup.getInstacne().GetBucketPieces(x + offsetX, y + offsetY);
             if (Pieces == null)
                 continue;
 
@@ -105,13 +99,13 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
         //Merge Layer
         set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().Merge(set, group);
+        LayerMananger.GetInstance().Merge(set, PuzzlePieceGroup.getInstacne());
     }
 
     public void ClearFromBucket()
     {
-        //移出桶子
-        group.RemoveFromBucket(this);
+        // 移出桶子
+        PuzzlePieceGroup.getInstacne().RemoveFromBucket(this);
     }
 
     public void BeforeMoving()
@@ -141,13 +135,13 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         {
             //取得所在Cell
             int x, y;
-            group.GetAlignCell(transform.localPosition, out x, out y);
+            PuzzlePieceGroup.getInstacne().GetAlignCell(transform.localPosition, out x, out y);
 
             //(1)pos重新對齊Cell
-            group.AlightPieceToCell(this, x, y);
+            PuzzlePieceGroup.getInstacne().AlightPieceToCell(this, x, y);
 
             //(2)更新位在那一個Bucket
-            group.InjectToBucket(this, x, y);
+            PuzzlePieceGroup.getInstacne().InjectToBucket(this, x, y);
 
             //還不屬於Layer
             if (GetLayerIndex() == LayerMananger.NullIndex)
@@ -167,7 +161,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void StartMoving()
     {
         onMoving = true;
-        group.nowMovingPiece = this;
+        PuzzlePieceGroup.getInstacne().nowMovingPiece = this;
 
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
@@ -230,18 +224,18 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void StopMoving()
     {
         onMoving = false;
-        group.nowMovingPiece = null;
+        PuzzlePieceGroup.getInstacne().nowMovingPiece = null;
 
         if (inPocket)
         {
             transform.parent = pocket.transform;
             pocket.RefreshPocket();//口袋重新對齊
-            group.RemoveFromBucket(this);//從桶子中移掉
+            PuzzlePieceGroup.getInstacne().RemoveFromBucket(this);//從桶子中移掉
         }
         else
         {
             if (connectedSet == null)
-                transform.parent = group.transform;//放回group
+                transform.parent = PuzzlePieceGroup.getInstacne().transform;//放回group
 
             AfterMoving();
 
@@ -269,7 +263,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
 
         //已經在moving其他的拼圖
-        if (group.nowMovingPiece != null)
+        if (PuzzlePieceGroup.getInstacne().nowMovingPiece != null)
             return;
 
         if (onMoving)
@@ -294,7 +288,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     }
 
-    //Just For Debug
+    // Debug info
     public float hWidth;
     public float hHeight;
     public void ResetSize(float hWidth, float hHeight)
@@ -302,6 +296,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         this.hWidth = hWidth;
         this.hHeight = hHeight;
     }
+
+    /* 顯示相關 */
 
     public void ResetUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
     {
@@ -321,15 +317,16 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         render.material.mainTexture = tex;
     }
 
+    /* scale相關 */
     Vector3 oldScale;
-    public void MemoryOldScale() { oldScale = transform.localScale; }
-
-    public void SetScaleInPocket(Vector3 scale)
-    {
-        transform.localScale = scale;
-    }
-    public void ResetScale()
+    public void memoryScale() { oldScale = transform.localScale; }
+    public void recoverScale()
     {
         transform.localScale = oldScale;
+    }
+
+    public void setScaleInPocket(Vector3 scale)
+    {
+        transform.localScale = scale;
     }
 }

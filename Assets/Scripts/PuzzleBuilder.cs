@@ -52,6 +52,9 @@ public class PuzzleBuilder : MonoBehaviour
             }
         }
 
+        // 綁定
+        PuzzlePieceGroup.setInstacne(target);
+
         // Create Piece 相關
         target.reRangeAndMarkPieceInfo(W, H);
         target.InjectNeighborPieceInfo();

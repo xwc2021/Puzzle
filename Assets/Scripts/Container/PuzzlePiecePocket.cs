@@ -28,7 +28,7 @@ public class PuzzlePiecePocket : MonoBehaviour
         pieceList.Insert(index, p);
         p.SetPocket(this);
         p.inPocket = true;
-        p.SetScaleInPocket(new Vector3(scale, scale, scale));
+        p.setScaleInPocket(new Vector3(scale, scale, scale));
 
         RefreshPocket();
     }
@@ -63,7 +63,7 @@ public class PuzzlePiecePocket : MonoBehaviour
         pieceList.Remove(p);
         p.inPocket = false;
         p.nowIndexInPocket = PuzzlePiecePocket.NullIndex;
-        p.ResetScale();
+        p.recoverScale();
 
         RefreshPocket();
     }

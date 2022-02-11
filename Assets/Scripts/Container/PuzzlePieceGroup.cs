@@ -4,6 +4,16 @@ using UnityEngine;
 // PuzzlePieceGroup底下可能會放PuzzlePiece或ConnectedSet(相連的Piece)
 public class PuzzlePieceGroup : MonoBehaviour
 {
+    public static PuzzlePieceGroup instacne;
+    public static PuzzlePieceGroup getInstacne()
+    {
+        return instacne;
+    }
+    public static void setInstacne(PuzzlePieceGroup group)
+    {
+        instacne = group;
+    }
+
     const int pieceCount = 24;
     const int rowCount = 4;
     const int columnCount = 6;
@@ -45,10 +55,7 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public void transferPieceTo(PuzzlePieceGroup target)
     {
-        //綁定Group
         var pieces = GetComponentsInChildren<PuzzlePiece>();
-        foreach (var p in pieces)
-            p.SetGroup(target);
 
         //轉移Child
         var targetTransform = target.transform;
@@ -63,8 +70,9 @@ public class PuzzlePieceGroup : MonoBehaviour
         }
 
         //記下Scale(因為進Pocket會改變Scale)
+
         foreach (var p in pieces)
-            p.MemoryOldScale();
+            p.memoryScale();
 
         Destroy(gameObject);
     }
@@ -263,7 +271,8 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public ConnectedSet CreateConnectedSet(PuzzlePiece p)
     {
-        //找出目前所在的Cell和原始的Cell的diff
+        // 找出目前所在的Cell和原始的Cell的diff
+        // todo: 每個Cell的中心點不是在正中心
         var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.index1DInFull];
 
         var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);

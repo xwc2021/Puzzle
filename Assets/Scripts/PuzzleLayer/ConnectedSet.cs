@@ -4,13 +4,22 @@ using UnityEngine;
 // 已經連在一起的Puzzle
 public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 {
-    //拉動時的參考Piece
-    public static PuzzlePiece pieceForAlign;
+    public List<PuzzlePiece> pieces;
+    void Awake()
+    {
+        pieces = new List<PuzzlePiece>();
+    }
 
     public int GetPiecesCount()
     {
         return pieces.Count;
     }
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+
+    /* 索引相關 */
     public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
@@ -20,36 +29,9 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     {
         layerIndex = value;
     }
-    public Transform GetTransform()
-    {
-        return transform;
-    }
 
-    public List<PuzzlePiece> pieces;
-
-    void Awake()
-    {
-        pieces = new List<PuzzlePiece>();
-    }
-
-    public void Add(ConnectedSet target)
-    {
-        foreach (var p in target.pieces)
-            Add(p);
-
-        target.pieces.Clear();
-    }
-
-    public void Add(PuzzlePiece p)
-    {
-        pieces.Add(p);
-        p.connectedSet = this;
-
-        //對齊到位置上
-        var t = p.transform;
-        t.parent = transform;
-        t.localPosition = PuzzlePieceGroup.Instance.pieceRealCenter[p.index1DInFull];
-    }
+    /* 移動相關 */
+    public static PuzzlePiece pieceForAlign; // 拉動時的參考Piece
 
     public void BeforeMoving()
     {
@@ -92,6 +74,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         FindConnectLayerAndMerge(x, y);
     }
 
+    /* 合併相關 */
     void FindConnectLayerAndMerge(int x, int y)
     {
         var group = PuzzlePieceGroup.Instance;
@@ -121,5 +104,24 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //Merge Layer
         set.Add(this);//把自己也加進去
         LayerMananger.GetInstance().merge(set, group);
+    }
+
+    public void Add(ConnectedSet target)
+    {
+        foreach (var p in target.pieces)
+            Add(p);
+
+        target.pieces.Clear();
+    }
+
+    public void Add(PuzzlePiece p)
+    {
+        pieces.Add(p);
+        p.connectedSet = this;
+
+        //對齊到位置上
+        var t = p.transform;
+        t.parent = transform;
+        t.localPosition = PuzzlePieceGroup.Instance.pieceRealCenter[p.index1DInFull];
     }
 }

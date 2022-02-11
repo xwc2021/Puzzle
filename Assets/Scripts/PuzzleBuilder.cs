@@ -48,7 +48,7 @@ public class PuzzleBuilder : MonoBehaviour
             }
         }
 
-        // 一些前置作業
+        // Create Piece 相關
         target.reRangeAndMarkPieceInfo(W, H);
         target.InjectNeighborPieceInfo();
         target.setDebugInfoPieceSize(ImageScaleX, ImageScaleZ);

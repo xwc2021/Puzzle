@@ -8,24 +8,66 @@ public class PuzzlePieceGroup : MonoBehaviour
     const int rowCount = 4;
     const int columnCount = 6;
 
-    [SerializeField]
-    ConnectedSet templateConnectedSet;
+    public PuzzlePiece nowMovingPiece;
 
-    public ConnectedSet CreateConnectedSet(PuzzlePiece p)
+    /* 索引Tool相關*/
+
+    int GetIndex1D(int column, int row)
     {
-        //找出目前所在的Cell和原始的Cell的diff
-        var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.index1DInFull];
-
-        var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
-        var t = cs.transform;
-        t.parent = transform;
-        t.localPosition = Vector3.zero + diff;
-
-        cs.group = this;
-        return cs;
+        return column + row * newColumnCount;
     }
 
-    public PuzzlePiece nowMovingPiece;
+    public bool IsValidIndex(int column, int row)
+    {
+        if (column < newColumnCount && column >= 0 && row < newRowCount && row >= 0)
+            return true;
+        else
+            return false;
+    }
+
+    /* Create Piece相關 */
+
+    public void setPieceTexture(Texture tex)
+    {
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        foreach (var p in pieces)
+        {
+            p.SetMainTextrue(tex);
+        }
+    }
+
+    public void resetPieceUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
+    {
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        foreach (var p in pieces)
+            p.ResetUV(uvScaleFactor, uvOffsetFactor);
+    }
+
+    public void transfer(PuzzlePieceGroup target)
+    {
+        //綁定Group
+        var pieces = GetComponentsInChildren<PuzzlePiece>();
+        foreach (var p in pieces)
+            p.SetGroup(target);
+
+        //轉移Child
+        var targetTransform = target.transform;
+        var transforms = GetComponentsInChildren<Transform>();
+        for (var i = 0; i < transforms.Length; i++)
+        {
+            var t = transforms[i];
+
+            //排除自己
+            if (t != transform)
+                t.parent = targetTransform;
+        }
+
+        //記下Scale(因為進Pocket會改變Scale)
+        foreach (var p in pieces)
+            p.MemoryOldScale();
+
+        Destroy(gameObject);
+    }
 
     public PuzzlePiece[] map1D;
     int newRowCount;
@@ -37,11 +79,11 @@ public class PuzzlePieceGroup : MonoBehaviour
         newRowCount = H * rowCount;
         map1D = new PuzzlePiece[W * H * pieceCount];
 
-        //如果W=2 H=3，會有6個group
-        //口口  g4 g5
-        //口口  g2 g3
-        //口口  g0 g1
-        //把這6個group，映射到一個一維陣列，並標名(nX,nY):index
+        //如果W=2 H=3，會有6個Block
+        //口口  B4 B5
+        //口口  B2 B3
+        //口口  B0 B1
+        //把這6個Block，映射到一個一維陣列，並標名(nX,nY):index
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         var index = 0;
         for (var h = 0; h < H; ++h)
@@ -97,20 +139,6 @@ public class PuzzlePieceGroup : MonoBehaviour
         }
     }
 
-    //After ReRangePiece
-    int GetIndex1D(int column, int row)
-    {
-        return column + row * newColumnCount;
-    }
-
-    public bool IsValidIndex(int column, int row)
-    {
-        if (column < newColumnCount && column >= 0 && row < newRowCount && row >= 0)
-            return true;
-        else
-            return false;
-    }
-
     float pieceWidth;
     float pieceHeight;
     float hPieceWidth;
@@ -141,26 +169,67 @@ public class PuzzlePieceGroup : MonoBehaviour
             pieceRealCenter[i] = map1D[i].transform.localPosition;
     }
 
+    public void SouffleToPocket(int W, int H, PuzzlePiecePocket puzzlePiecePocket)
+    {
+        var count = W * H * pieceCount;
+        var indexList = new List<int>();
+
+        // 產生號碼牌(index)
+        for (var i = 0; i < count; ++i)
+            indexList.Add(i);
+
+        while (indexList.Count > 0)
+        {
+            // 搖出號碼牌
+            int i = Random.Range(0, indexList.Count);
+            var removeIndex = indexList[i];
+            indexList.RemoveAt(i);
+
+            // 把號碼牌對映的Piece加到口袋(Pocket)
+            var nowPiece = map1D[removeIndex];
+            puzzlePiecePocket.AddToPocket(0, nowPiece, true);
+        }
+    }
+
+    /* Bucket相關 */
+    // 桶子可以接水，這裡的桶子是用來裝拼圖(空間索引)
+    PuzzleBucket[] bucketCells;
+    public void InitBucket(int W, int H)
+    {
+        var count = W * H * pieceCount;
+        bucketCells = new PuzzleBucket[count];
+
+        for (var i = 0; i < bucketCells.Length; ++i)
+            bucketCells[i] = new PuzzleBucket();
+    }
+
+    public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
+    {
+        //放到桶子裡
+        var i = GetIndex1D(xIndex, yIndex);
+        p.bucketIndex = i;
+        bucketCells[i].Add(p);
+    }
+
+    public void RemoveFromBucket(PuzzlePiece p)
+    {
+        if (p.bucketIndex == PuzzleBucket.NullIndex)
+            return;
+
+        bucketCells[p.bucketIndex].Remove(p);//這裡是O(n) 
+        p.bucketIndex = PuzzleBucket.NullIndex;
+    }
+
     public PuzzlePiece[] GetBucketPieces(int column, int row)
     {
         if (!IsValidIndex(column, row))
             return null;
 
         var i = GetIndex1D(column, row);
-        return buckets[i].GetTotal();
+        return bucketCells[i].GetTotal();
     }
 
-    //桶子可以接水，這裡的桶子是用來裝拼圖(空間索引)
-    PuzzleBucket[] buckets;
-    public void InitBucket(int W, int H)
-    {
-        var count = W * H * pieceCount;
-        buckets = new PuzzleBucket[count];
-
-        for (var i = 0; i < buckets.Length; ++i)
-            buckets[i] = new PuzzleBucket();
-    }
-
+    /* Cell相關 */
     public void GetAlignCell(Vector3 localPos, out int xIndex, out int yIndex)
     {
         //找出xIndex,zIndex
@@ -188,85 +257,21 @@ public class PuzzlePieceGroup : MonoBehaviour
         return pieceRealCenter[newIndex] - localPos;
     }
 
-    public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
+    /* 建立ConnectedSet相關 */
+    [SerializeField]
+    ConnectedSet templateConnectedSet;
+
+    public ConnectedSet CreateConnectedSet(PuzzlePiece p)
     {
-        //放到桶子裡
-        var i = GetIndex1D(xIndex, yIndex);
-        p.bucketIndex = i;
-        buckets[i].Add(p);
-    }
+        //找出目前所在的Cell和原始的Cell的diff
+        var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.index1DInFull];
 
-    public void RemoveFromBucket(PuzzlePiece p)
-    {
-        if (p.bucketIndex == PuzzleBucket.NullIndex)
-            return;
+        var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);
+        var t = cs.transform;
+        t.parent = transform;
+        t.localPosition = Vector3.zero + diff;
 
-        buckets[p.bucketIndex].Remove(p);//這裡是O(n) 
-        p.bucketIndex = PuzzleBucket.NullIndex;
-    }
-
-    public void SouffleToPocket(int W, int H, PuzzlePiecePocket puzzlePiecePocket)
-    {
-        var count = W * H * pieceCount;
-        var indexList = new List<int>();
-
-        // 產生號碼牌(index)
-        for (var i = 0; i < count; ++i)
-            indexList.Add(i);
-
-        while (indexList.Count > 0)
-        {
-            // 搖出號碼牌
-            int i = Random.Range(0, indexList.Count);
-            var removeIndex = indexList[i];
-            indexList.RemoveAt(i);
-
-            // 把號碼牌對映的Piece加到口袋(Pocket)
-            var nowPiece = map1D[removeIndex];
-            puzzlePiecePocket.AddToPocket(0, nowPiece, true);
-        }
-    }
-
-    public void setPieceTexture(Texture tex)
-    {
-        var pieces = GetComponentsInChildren<PuzzlePiece>();
-        foreach (var p in pieces)
-        {
-            p.SetMainTextrue(tex);
-        }
-    }
-
-
-    public void resetPieceUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
-    {
-        var pieces = GetComponentsInChildren<PuzzlePiece>();
-        foreach (var p in pieces)
-            p.ResetUV(uvScaleFactor, uvOffsetFactor);
-    }
-
-    public void transfer(PuzzlePieceGroup target)
-    {
-        //綁定Group
-        var pieces = GetComponentsInChildren<PuzzlePiece>();
-        foreach (var p in pieces)
-            p.SetGroup(target);
-
-        //轉移Child
-        var targetTransform = target.transform;
-        var transforms = GetComponentsInChildren<Transform>();
-        for (var i = 0; i < transforms.Length; i++)
-        {
-            var t = transforms[i];
-
-            //排除自己
-            if (t != transform)
-                t.parent = targetTransform;
-        }
-
-        //記下Scale(因為進Pocket會改變Scale)
-        foreach (var p in pieces)
-            p.MemoryOldScale();
-
-        Destroy(gameObject);
+        cs.group = this;
+        return cs;
     }
 }

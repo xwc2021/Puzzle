@@ -23,15 +23,13 @@ public class LayerMananger
 
     public void add(IPuzzleLayer layer)
     {
-        var startIndex = layers.Count - 1;
-
-        if (startIndex >= 0)
-            upToDownInsert(layer, startIndex);
-        else
+        if (layers.Count == 0)
         {
             layer.SetLayerIndex(0);
             layers.Add(layer);
         }
+        else
+            upToDownInsert(layer);
 
         refreshLayerDepth();
     }
@@ -50,7 +48,7 @@ public class LayerMananger
         var i = layer.GetLayerIndex();
         layers.RemoveAt(i);
 
-        //從下往上插入會比較快
+        // 從下往上插入會比較快
         dowToUpInsert(layer);
 
         refreshLayerDepth();
@@ -61,7 +59,7 @@ public class LayerMananger
         for (var i = 0; i < layers.Count; ++i)
         {
             var L = layers[i];
-            if (layer.GetPiecesCount() > L.GetPiecesCount())
+            if (layer.GetPiecesCount() > L.GetPiecesCount()) // 比這層大，就插入
             {
                 layers.Insert(i, layer);
                 return;
@@ -71,12 +69,13 @@ public class LayerMananger
         layers.Insert(layers.Count, layer);
     }
 
-    void upToDownInsert(IPuzzleLayer layer, int startIndex)
+    void upToDownInsert(IPuzzleLayer layer)
     {
+        var startIndex = layers.Count - 1;
         for (var i = startIndex; i >= 0; --i)
         {
             var L = layers[i];
-            if (layer.GetPiecesCount() <= L.GetPiecesCount())
+            if (layer.GetPiecesCount() <= L.GetPiecesCount()) // 比這層小，就插入
             {
                 var insetIndex = i + 1;
                 layers.Insert(insetIndex, layer);

@@ -43,7 +43,7 @@ public class PuzzlePieceGroup : MonoBehaviour
             p.ResetUV(uvScaleFactor, uvOffsetFactor);
     }
 
-    public void transfer(PuzzlePieceGroup target)
+    public void transferPieceTo(PuzzlePieceGroup target)
     {
         //綁定Group
         var pieces = GetComponentsInChildren<PuzzlePiece>();
@@ -79,11 +79,11 @@ public class PuzzlePieceGroup : MonoBehaviour
         newRowCount = H * rowCount;
         map1D = new PuzzlePiece[W * H * pieceCount];
 
-        //如果W=2 H=3，會有6個Block
-        //口口  B4 B5
-        //口口  B2 B3
-        //口口  B0 B1
-        //把這6個Block，映射到一個一維陣列，並標名(nX,nY):index
+        //如果W=2 H=3，會有6個Group
+        //口口  G4 G5
+        //口口  G2 G3
+        //口口  G0 G1
+        //把這6個Group的piece，映射到一個一維陣列，並標名(nX,nY):index
         var pieces = GetComponentsInChildren<PuzzlePiece>();
         var index = 0;
         for (var h = 0; h < H; ++h)

@@ -38,13 +38,17 @@ public class PuzzleBuilder : MonoBehaviour
         var uvOffsetX = 1.0f / W;
         var uvOffsetY = 1.0f / H;
 
-        // 目前的做法，是用W*H個6*4的拼圖組成1個大拼圖
+        //如果W=2 H=3，會有6個Group
+        //口口  G4 G5
+        //口口  G2 G3
+        //口口  G0 G1
+        //把這6個Group的piece transfer到1個group裡
         for (int y = 0; y < H; y++)
         {
             for (int x = 0; x < W; x++)
             {
                 var uvOffsetFactor = new Vector2(x * uvOffsetX, y * uvOffsetY);
-                GeneratePiece(startPos + x * offsetX + y * offsetY, scale, uvScaleFactor, uvOffsetFactor, target);
+                GeneratePieceGroupAndTransferPiece(startPos + x * offsetX + y * offsetY, scale, uvScaleFactor, uvOffsetFactor, target);
             }
         }
 
@@ -61,12 +65,12 @@ public class PuzzleBuilder : MonoBehaviour
 
 
     Quaternion rot = Quaternion.Euler(90, 180, 0);
-    void GeneratePiece(Vector3 pos, Vector3 scale, Vector2 uvScaleFactor, Vector2 uvOffsetFactor, PuzzlePieceGroup target)
+    void GeneratePieceGroupAndTransferPiece(Vector3 pos, Vector3 scale, Vector2 uvScaleFactor, Vector2 uvOffsetFactor, PuzzlePieceGroup target)
     {
         var group = GameObject.Instantiate<PuzzlePieceGroup>(puzzlePieceGroup, pos, rot);
         group.transform.localScale = scale;
         group.setPieceTexture(Bootstrap.getInstance().GetMaterial().mainTexture);
         group.resetPieceUV(uvScaleFactor, uvOffsetFactor);
-        group.transfer(target);
+        group.transferPieceTo(target);
     }
 }

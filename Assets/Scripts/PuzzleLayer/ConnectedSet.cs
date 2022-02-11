@@ -55,7 +55,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     public void BeforeMoving()
     {
         foreach (var p in pieces)
-            p.ClearFromBucket();
+            PuzzlePieceGroup.Instance.RemoveFromBucket(p);
     }
 
     static int bucketOffsetX;

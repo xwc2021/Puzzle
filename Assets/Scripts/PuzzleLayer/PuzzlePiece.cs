@@ -91,77 +91,26 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         return b1 && b2;
     }
 
-    public ConnectedSet connectedSet;
+    /* Drag相關 */
+    Vector3 oldLocalPos;
+    Vector3 beginDragPos;
+    bool onMoving = false;
 
-    public void FindConnectLayer(int x, int y, HashSet<IPuzzleLayer> set)
-    {
-        for (var i = 0; i < NeighborOffset.Length; ++i)
-        {
-            var offset = NeighborOffset[i];
-            var offsetX = (int)offset.x;
-            var offsetY = (int)offset.y;
-            var Pieces = PuzzlePieceGroup.Instance.GetBucketPieces(x + offsetX, y + offsetY);
-            if (Pieces == null)
-                continue;
-
-            for (var k = 0; k < Pieces.Length; ++k)
-            {
-                var p = Pieces[k];
-                if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
-                {
-                    //已經相接在一起，就跳過
-                    if (p.connectedSet == connectedSet && connectedSet != null)
-                        continue;
-
-                    var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer;
-
-                    if (!set.Contains(findOne))//有可能findOne已經在set裡了
-                        set.Add(findOne);
-
-                    break;
-                }
-            }
-        }
-    }
-
-    void FindConnectLayerAndMerge(int x, int y)
-    {
-        var set = new HashSet<IPuzzleLayer>();
-        FindConnectLayer(x, y, set);
-
-        //沒有找到任何相鄰Layer
-        if (set.Count == 0)
-        {
-            LayerMananger.GetInstance().refreshLayerDepth();
-            return;
-        }
-
-        //Merge Layer
-        set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().merge(set, PuzzlePieceGroup.Instance);
-    }
-
-    public void ClearFromBucket()
-    {
-        // 移出桶子
-        PuzzlePieceGroup.Instance.RemoveFromBucket(this);
-    }
+    static Transform MovingTarget;
 
     public void BeforeMoving()
     {
-
         if (connectedSet != null)
             connectedSet.BeforeMoving();
         else
         {
             //從Bucket裡清除
-            ClearFromBucket();
+            PuzzlePieceGroup.Instance.RemoveFromBucket(this);
 
             //從Layer移除：這樣才能放到最上面
             if (layerIndex != Tool.NullIndex)
                 LayerMananger.GetInstance().remove(this);
         }
-
     }
 
     public void AfterMoving()
@@ -191,12 +140,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             FindConnectLayerAndMerge(x, y);
         }
     }
-
-    Vector3 oldLocalPos;
-    Vector3 beginDragPos;
-    bool onMoving = false;
-
-    static Transform MovingTarget;
 
     void StartMoving()
     {
@@ -280,7 +223,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 transform.parent = group.transform;//放回group
 
             AfterMoving();
-
         }
     }
 
@@ -327,6 +269,56 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             else
                 StopMoving();
         }
+    }
 
+    /* 合併相關 */
+    public ConnectedSet connectedSet;
+
+    void FindConnectLayerAndMerge(int x, int y)
+    {
+        var set = new HashSet<IPuzzleLayer>();
+        FindConnectLayer(x, y, set);
+
+        //沒有找到任何相鄰Layer
+        if (set.Count == 0)
+        {
+            LayerMananger.GetInstance().refreshLayerDepth();
+            return;
+        }
+
+        //Merge Layer
+        set.Add(this);//把自己也加進去
+        LayerMananger.GetInstance().merge(set, PuzzlePieceGroup.Instance);
+    }
+
+    public void FindConnectLayer(int x, int y, HashSet<IPuzzleLayer> set)
+    {
+        for (var i = 0; i < NeighborOffset.Length; ++i)
+        {
+            var offset = NeighborOffset[i];
+            var offsetX = (int)offset.x;
+            var offsetY = (int)offset.y;
+            var Pieces = PuzzlePieceGroup.Instance.GetBucketPieces(x + offsetX, y + offsetY);
+            if (Pieces == null)
+                continue;
+
+            for (var k = 0; k < Pieces.Length; ++k)
+            {
+                var p = Pieces[k];
+                if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
+                {
+                    //已經相接在一起，就跳過
+                    if (p.connectedSet == connectedSet && connectedSet != null)
+                        continue;
+
+                    var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer;
+
+                    if (!set.Contains(findOne))//有可能findOne已經在set裡了
+                        set.Add(findOne);
+
+                    break;
+                }
+            }
+        }
     }
 }

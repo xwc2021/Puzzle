@@ -9,6 +9,70 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         return 1;
     }
+
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+
+    Transform GetParentTransform()
+    {
+        //不管現在的paretn是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
+        return transform.parent;
+    }
+
+    /* Debug相關 */
+    public float hWidth;
+    public float hHeight;
+    public void ResetSize(float hWidth, float hHeight)
+    {
+        this.hWidth = hWidth;
+        this.hHeight = hHeight;
+    }
+
+    /* 顯示相關 */
+    public void ResetUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
+    {
+        var mesh = GetComponent<MeshFilter>().mesh;
+        var uvs = mesh.uv;
+        for (var i = 0; i < uvs.Length; i++)
+        {
+            var uv = uvs[i];//這已經是複本了!!
+            uvs[i].Set(uv.x * uvScaleFactor.x + uvOffsetFactor.x, uv.y * uvScaleFactor.y + uvOffsetFactor.y);
+        }
+        mesh.uv = uvs;
+    }
+
+    public void SetMainTextrue(Texture tex)
+    {
+        var render = GetComponent<Renderer>();
+        render.material.mainTexture = tex;
+    }
+
+    /* scale相關 */
+    Vector3 oldScale;
+    public void memoryScale() { oldScale = transform.localScale; }
+    public void recoverScale()
+    {
+        transform.localScale = oldScale;
+    }
+
+    public void setScaleInPocket(Vector3 scale)
+    {
+        transform.localScale = scale;
+    }
+
+    /* Pocket相關 */
+    public int nowIndexInPocket = PuzzlePiecePocket.NullIndex;
+    public bool inPocket = false;
+    PuzzlePiecePocket pocket;
+    public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
+
+    /* 索引相關 */
+    public int bucketIndex = PuzzleBucket.NullIndex;
+    public int xIndexInFull;
+    public int yIndexInFull;
+    public int index1DInFull;
     public int layerIndex = LayerMananger.NullIndex;
     public int GetLayerIndex()
     {
@@ -18,38 +82,15 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         layerIndex = value;
     }
-    public Transform GetTransform()
-    {
-        return transform;
-    }
 
-    //CreateConnectedSet會使用bucketIndex來計算diff
-    public int bucketIndex = PuzzleBucket.NullIndex;
-
-    public int xIndexInFull;
-    public int yIndexInFull;
-    public int index1DInFull;
-
-    //鄰接資訊
+    /* 鄰接相關 */
     public Vector2[] NeighborOffset;
-
-    public int nowIndexInPocket = PuzzlePiecePocket.NullIndex;
-    public bool inPocket = false;
 
     bool IsMyNeighbor(int x, int y, PuzzlePiece p)
     {
         var b1 = p.xIndexInFull == (xIndexInFull + x);
         var b2 = p.yIndexInFull == (yIndexInFull + y);
         return b1 && b2;
-    }
-
-    PuzzlePiecePocket pocket;
-    public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
-
-    Transform GetParentTransform()
-    {
-        //不管現在的paretn是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
-        return transform.parent;
     }
 
     public ConnectedSet connectedSet;
@@ -286,47 +327,5 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 StopMoving();
         }
 
-    }
-
-    // Debug info
-    public float hWidth;
-    public float hHeight;
-    public void ResetSize(float hWidth, float hHeight)
-    {
-        this.hWidth = hWidth;
-        this.hHeight = hHeight;
-    }
-
-    /* 顯示相關 */
-
-    public void ResetUV(Vector2 uvScaleFactor, Vector2 uvOffsetFactor)
-    {
-        var mesh = GetComponent<MeshFilter>().mesh;
-        var uvs = mesh.uv;
-        for (var i = 0; i < uvs.Length; i++)
-        {
-            var uv = uvs[i];//這已經是複本了!!
-            uvs[i].Set(uv.x * uvScaleFactor.x + uvOffsetFactor.x, uv.y * uvScaleFactor.y + uvOffsetFactor.y);
-        }
-        mesh.uv = uvs;
-    }
-
-    public void SetMainTextrue(Texture tex)
-    {
-        var render = GetComponent<Renderer>();
-        render.material.mainTexture = tex;
-    }
-
-    /* scale相關 */
-    Vector3 oldScale;
-    public void memoryScale() { oldScale = transform.localScale; }
-    public void recoverScale()
-    {
-        transform.localScale = oldScale;
-    }
-
-    public void setScaleInPocket(Vector3 scale)
-    {
-        transform.localScale = scale;
     }
 }

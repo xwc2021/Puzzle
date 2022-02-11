@@ -164,8 +164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7158324dfa2ac634a9788dea961ae3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  W: 2
-  H: 2
+  W: 1
+  H: 1
   puzzlePieceGroup: {fileID: 5054844795350245114, guid: 17156dddd8c66084c8f19ad777b0fb5b,
     type: 3}
   target: {fileID: 911320174}

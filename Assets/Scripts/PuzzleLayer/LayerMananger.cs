@@ -4,7 +4,6 @@ using UnityEngine;
 // 負責深度排序的工作
 public class LayerMananger
 {
-    public readonly static int NullIndex = -1;
     float depth = 0;
     float span = 1;
 
@@ -87,7 +86,7 @@ public class LayerMananger
     {
         var i = layer.GetLayerIndex();
         layers.RemoveAt(i);
-        layer.SetLayerIndex(LayerMananger.NullIndex);
+        layer.SetLayerIndex(Tool.NullIndex);
 
         RefreshLayerDepth();
     }

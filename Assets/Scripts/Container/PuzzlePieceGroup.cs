@@ -195,7 +195,7 @@ public class PuzzlePieceGroup : MonoBehaviour
 
             // 把號碼牌對映的Piece加到口袋(Pocket)
             var nowPiece = map1D[removeIndex];
-            puzzlePiecePocket.AddToPocket(0, nowPiece, true);
+            puzzlePiecePocket.addToPocket(0, nowPiece, true);
         }
     }
 
@@ -221,11 +221,11 @@ public class PuzzlePieceGroup : MonoBehaviour
 
     public void RemoveFromBucket(PuzzlePiece p)
     {
-        if (p.bucketIndex == PuzzleBucket.NullIndex)
+        if (p.bucketIndex == Tool.NullIndex)
             return;
 
         bucketCells[p.bucketIndex].Remove(p);//這裡是O(n) 
-        p.bucketIndex = PuzzleBucket.NullIndex;
+        p.bucketIndex = Tool.NullIndex;
     }
 
     public PuzzlePiece[] GetBucketPieces(int column, int row)
@@ -243,8 +243,8 @@ public class PuzzlePieceGroup : MonoBehaviour
         //找出xIndex,zIndex
         float x = localPos.x;
         float z = localPos.z;
-        xIndex = PuzzleBucket.GetIndexOfCell(x, -pieceWidth);
-        yIndex = PuzzleBucket.GetIndexOfCell(z, -pieceHeight);
+        xIndex = Tool.GetIndexOfCell(x, -pieceWidth);
+        yIndex = Tool.GetIndexOfCell(z, -pieceHeight);
 
         xIndex = Mathf.Clamp(xIndex, 0, newColumnCount - 1);
         yIndex = Mathf.Clamp(yIndex, 0, newRowCount - 1);

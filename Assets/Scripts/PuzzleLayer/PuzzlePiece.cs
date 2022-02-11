@@ -63,17 +63,17 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     }
 
     /* Pocket相關 */
-    public int nowIndexInPocket = PuzzlePiecePocket.NullIndex;
+    public int nowIndexInPocket = Tool.NullIndex;
     public bool inPocket = false;
     PuzzlePiecePocket pocket;
     public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
     /* 索引相關 */
-    public int bucketIndex = PuzzleBucket.NullIndex;
+    public int bucketIndex = Tool.NullIndex;
     public int xIndexInFull;
     public int yIndexInFull;
     public int index1DInFull;
-    public int layerIndex = LayerMananger.NullIndex;
+    public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
         return layerIndex;
@@ -160,7 +160,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             ClearFromBucket();
 
             //從Layer移除：這樣才能放到最上面
-            if (layerIndex != LayerMananger.NullIndex)
+            if (layerIndex != Tool.NullIndex)
                 LayerMananger.GetInstance().Remove(this);
         }
 
@@ -185,7 +185,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             PuzzlePieceGroup.getInstacne().InjectToBucket(this, x, y);
 
             //還不屬於Layer
-            if (GetLayerIndex() == LayerMananger.NullIndex)
+            if (GetLayerIndex() == Tool.NullIndex)
                 LayerMananger.GetInstance().Add(this);
 
             //(3)找出可以相連的Layer
@@ -232,10 +232,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         MovingTarget.localPosition = oldLocalPos + localDelta;
 
         var nowX = transform.position.x;
-        if (nowX < pocket.GetBorder())//臨界點
+        if (nowX < pocket.GetBorder()) // 臨界點
         {
             if (inPocket)
-                pocket.RemoveFromPocket(this);
+                pocket.removeFromPocket(this);
         }
         else
         {
@@ -248,16 +248,16 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             pos = pocket.transform.InverseTransformPoint(pos);
             var localZ = pos.z;
 
-            var nowIndex = pocket.GetInsertIndex(localZ, inPocket);
+            var nowIndex = pocket.getInsertIndex(localZ, inPocket);
             //print(nowIndex);
             if (!inPocket)//不在口袋裡，就加進去
             {
-                pocket.AddToPocket(nowIndex, this, false);
+                pocket.addToPocket(nowIndex, this, false);
             }
             else
             {
                 if (nowIndexInPocket != nowIndex)
-                    pocket.SwapInPocket(nowIndexInPocket, nowIndex);//交換
+                    pocket.swapInPocket(nowIndexInPocket, nowIndex);//交換
             }
         }
     }
@@ -270,7 +270,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         if (inPocket)
         {
             transform.parent = pocket.transform;
-            pocket.RefreshPocket();//口袋重新對齊
+            pocket.refreshPocket();//口袋重新對齊
             PuzzlePieceGroup.getInstacne().RemoveFromBucket(this);//從桶子中移掉
         }
         else

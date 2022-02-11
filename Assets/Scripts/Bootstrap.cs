@@ -55,7 +55,7 @@ public class Bootstrap : MonoBehaviour
             setSquareSize(tex.width, tex.height);
 
             puzzleBuilder.Generate();
-            puzzlePiecePocket.SetPosition();
+            puzzlePiecePocket.snapToRight();
         }
     }
 

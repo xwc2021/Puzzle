@@ -12,7 +12,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     {
         return pieces.Count;
     }
-    public int layerIndex = LayerMananger.NullIndex;
+    public int layerIndex = Tool.NullIndex;
     public int GetLayerIndex()
     {
         return layerIndex;

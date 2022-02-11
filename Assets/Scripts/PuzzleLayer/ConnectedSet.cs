@@ -49,7 +49,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //對齊到位置上
         var t = p.transform;
         t.parent = transform;
-        t.localPosition = group.pieceRealCenter[p.index1DInGroup];
+        t.localPosition = group.pieceRealCenter[p.index1DInFull];
     }
 
     public void BeforeMoving()
@@ -74,14 +74,14 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 
         //因為ConnectedSet不一定會剛好和Group對齊
         //所以要使用Offset來修正
-        bucketOffsetX = x - pieceForAlign.xIndexInGroup;
-        bucketOffsetY = y - pieceForAlign.yIndexInGroup;
+        bucketOffsetX = x - pieceForAlign.xIndexInFull;
+        bucketOffsetY = y - pieceForAlign.yIndexInFull;
 
         //(2)所有Piece更新位在那一個Bucket
         foreach (var p in pieces)
         {
-            var targetX = p.xIndexInGroup + bucketOffsetX;
-            var targetY = p.yIndexInGroup + bucketOffsetY;
+            var targetX = p.xIndexInFull + bucketOffsetX;
+            var targetY = p.yIndexInFull + bucketOffsetY;
 
             if (group.IsValidIndex(targetX, targetY))
                 group.InjectToBucket(p, targetX, targetY);
@@ -99,8 +99,8 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         {
             if (p != pieceForAlign)
             {
-                var targetX = p.xIndexInGroup + bucketOffsetX;
-                var targetY = p.yIndexInGroup + bucketOffsetY;
+                var targetX = p.xIndexInFull + bucketOffsetX;
+                var targetY = p.yIndexInFull + bucketOffsetY;
 
                 if (group.IsValidIndex(targetX, targetY))
                     p.FindConnectLayer(targetX, targetY, set);

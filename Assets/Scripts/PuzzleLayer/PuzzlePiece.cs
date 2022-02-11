@@ -26,9 +26,9 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     //CreateConnectedSet會使用bucketIndex來計算diff
     public int bucketIndex = PuzzleBucket.NullIndex;
 
-    public int xIndexInGroup;
-    public int yIndexInGroup;
-    public int index1DInGroup;
+    public int xIndexInFull;
+    public int yIndexInFull;
+    public int index1DInFull;
 
     //鄰接資訊
     public Vector2[] NeighborOffset;
@@ -38,8 +38,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     bool IsMyNeighbor(int x, int y, PuzzlePiece p)
     {
-        var b1 = p.xIndexInGroup == (xIndexInGroup + x);
-        var b2 = p.yIndexInGroup == (yIndexInGroup + y);
+        var b1 = p.xIndexInFull == (xIndexInFull + x);
+        var b2 = p.yIndexInFull == (yIndexInFull + y);
         return b1 && b2;
     }
 

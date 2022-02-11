@@ -4,15 +4,7 @@ using UnityEngine;
 // PuzzlePieceGroup底下可能會放PuzzlePiece或ConnectedSet(相連的Piece)
 public class PuzzlePieceGroup : MonoBehaviour
 {
-    public static PuzzlePieceGroup instacne;
-    public static PuzzlePieceGroup getInstacne()
-    {
-        return instacne;
-    }
-    public static void setInstacne(PuzzlePieceGroup group)
-    {
-        instacne = group;
-    }
+    public static PuzzlePieceGroup Instance;
 
     const int pieceCount = 24;
     const int rowCount = 4;

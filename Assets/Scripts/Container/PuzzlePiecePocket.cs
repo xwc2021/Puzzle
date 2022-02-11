@@ -4,6 +4,8 @@ using UnityEngine;
 // 畫面右方的口袋
 public class PuzzlePiecePocket : MonoBehaviour
 {
+    public static PuzzlePiecePocket Instance;
+
     List<PuzzlePiece> pieceList;
     private void Awake()
     {
@@ -36,7 +38,6 @@ public class PuzzlePiecePocket : MonoBehaviour
         }
 
         pieceList.Insert(index, p);
-        p.SetPocket(this);
         p.inPocket = true;
         p.setScaleInPocket(new Vector3(scaleForInPocketPiece, scaleForInPocketPiece, scaleForInPocketPiece));
 

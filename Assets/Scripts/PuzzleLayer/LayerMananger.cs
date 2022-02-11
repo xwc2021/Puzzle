@@ -4,7 +4,6 @@ using UnityEngine;
 // 負責深度排序的工作
 public class LayerMananger
 {
-    float depth = 0;
     float span = 1;
 
     List<IPuzzleLayer> layers;

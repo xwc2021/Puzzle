@@ -25,6 +25,10 @@ public class PuzzleBuilder : MonoBehaviour
 
     public void Generate()
     {
+        // 綁定
+        PuzzlePieceGroup.Instance = target;
+        PuzzlePiecePocket.Instance = puzzlePiecePocket;
+
         var startPos = transform.position;
         var ImageScaleX = Bootstrap.getInstance().getImageScaleX();
         var ImageScaleZ = Bootstrap.getInstance().getImageScaleZ();
@@ -51,9 +55,6 @@ public class PuzzleBuilder : MonoBehaviour
                 GeneratePieceGroupAndTransferPiece(startPos + x * offsetX + y * offsetY, scale, uvScaleFactor, uvOffsetFactor, target);
             }
         }
-
-        // 綁定
-        PuzzlePieceGroup.setInstacne(target);
 
         // Create Piece 相關
         target.reRangeAndMarkPieceInfo(W, H);

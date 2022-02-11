@@ -65,8 +65,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     /* Pocket相關 */
     public int nowIndexInPocket = Tool.NullIndex;
     public bool inPocket = false;
-    PuzzlePiecePocket pocket;
-    public void SetPocket(PuzzlePiecePocket pocket) { this.pocket = pocket; }
 
     /* 索引相關 */
     public int bucketIndex = Tool.NullIndex;
@@ -102,7 +100,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             var offset = NeighborOffset[i];
             var offsetX = (int)offset.x;
             var offsetY = (int)offset.y;
-            var Pieces = PuzzlePieceGroup.getInstacne().GetBucketPieces(x + offsetX, y + offsetY);
+            var Pieces = PuzzlePieceGroup.Instance.GetBucketPieces(x + offsetX, y + offsetY);
             if (Pieces == null)
                 continue;
 
@@ -140,13 +138,13 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
         //Merge Layer
         set.Add(this);//把自己也加進去
-        LayerMananger.GetInstance().Merge(set, PuzzlePieceGroup.getInstacne());
+        LayerMananger.GetInstance().Merge(set, PuzzlePieceGroup.Instance);
     }
 
     public void ClearFromBucket()
     {
         // 移出桶子
-        PuzzlePieceGroup.getInstacne().RemoveFromBucket(this);
+        PuzzlePieceGroup.Instance.RemoveFromBucket(this);
     }
 
     public void BeforeMoving()
@@ -176,13 +174,14 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         {
             //取得所在Cell
             int x, y;
-            PuzzlePieceGroup.getInstacne().GetAlignCell(transform.localPosition, out x, out y);
+            var group = PuzzlePieceGroup.Instance;
+            group.GetAlignCell(transform.localPosition, out x, out y);
 
             //(1)pos重新對齊Cell
-            PuzzlePieceGroup.getInstacne().AlightPieceToCell(this, x, y);
+            group.AlightPieceToCell(this, x, y);
 
             //(2)更新位在那一個Bucket
-            PuzzlePieceGroup.getInstacne().InjectToBucket(this, x, y);
+            group.InjectToBucket(this, x, y);
 
             //還不屬於Layer
             if (GetLayerIndex() == Tool.NullIndex)
@@ -202,7 +201,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void StartMoving()
     {
         onMoving = true;
-        PuzzlePieceGroup.getInstacne().nowMovingPiece = this;
+        PuzzlePieceGroup.Instance.nowMovingPiece = this;
 
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
@@ -231,6 +230,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         var localDelta = GetParentTransform().InverseTransformVector(delta);
         MovingTarget.localPosition = oldLocalPos + localDelta;
 
+        var pocket = PuzzlePiecePocket.Instance;
         var nowX = transform.position.x;
         if (nowX < pocket.GetBorder()) // 臨界點
         {
@@ -245,7 +245,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
             //轉換回Pocket的local space
             var pos = transform.position;
-            pos = pocket.transform.InverseTransformPoint(pos);
+            pos = PuzzlePiecePocket.Instance.transform.InverseTransformPoint(pos);
             var localZ = pos.z;
 
             var nowIndex = pocket.getInsertIndex(localZ, inPocket);
@@ -265,18 +265,19 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void StopMoving()
     {
         onMoving = false;
-        PuzzlePieceGroup.getInstacne().nowMovingPiece = null;
-
+        var group = PuzzlePieceGroup.Instance;
+        group.nowMovingPiece = null;
         if (inPocket)
         {
+            var pocket = PuzzlePiecePocket.Instance;
             transform.parent = pocket.transform;
             pocket.refreshPocket();//口袋重新對齊
-            PuzzlePieceGroup.getInstacne().RemoveFromBucket(this);//從桶子中移掉
+            group.RemoveFromBucket(this);//從桶子中移掉
         }
         else
         {
             if (connectedSet == null)
-                transform.parent = PuzzlePieceGroup.getInstacne().transform;//放回group
+                transform.parent = group.transform;//放回group
 
             AfterMoving();
 
@@ -304,7 +305,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
 
         //已經在moving其他的拼圖
-        if (PuzzlePieceGroup.getInstacne().nowMovingPiece != null)
+        if (PuzzlePieceGroup.Instance.nowMovingPiece != null)
             return;
 
         if (onMoving)

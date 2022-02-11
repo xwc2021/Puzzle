@@ -7,7 +7,6 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     //拉動時的參考Piece
     public static PuzzlePiece pieceForAlign;
 
-    public PuzzlePieceGroup group;
     public int GetPiecesCount()
     {
         return pieces.Count;
@@ -49,7 +48,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         //對齊到位置上
         var t = p.transform;
         t.parent = transform;
-        t.localPosition = group.pieceRealCenter[p.index1DInFull];
+        t.localPosition = PuzzlePieceGroup.Instance.pieceRealCenter[p.index1DInFull];
     }
 
     public void BeforeMoving()
@@ -62,6 +61,8 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     static int bucketOffsetY;
     public void AfterMoving()
     {
+        var group = PuzzlePieceGroup.Instance;
+
         // 取得所在Cell
         var worldPos = pieceForAlign.transform.position;
         var localPosInGroup = group.transform.InverseTransformPoint(worldPos);
@@ -93,6 +94,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
 
     void FindConnectLayerAndMerge(int x, int y)
     {
+        var group = PuzzlePieceGroup.Instance;
         var set = new HashSet<IPuzzleLayer>();
 
         foreach (var p in pieces)

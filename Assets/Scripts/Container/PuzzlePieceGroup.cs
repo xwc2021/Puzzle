@@ -272,7 +272,6 @@ public class PuzzlePieceGroup : MonoBehaviour
         t.parent = transform;
         t.localPosition = Vector3.zero + diff;
 
-        cs.group = this;
         return cs;
     }
 }

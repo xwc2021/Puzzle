@@ -92,19 +92,62 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     }
 
     /* Drag相關 */
+
+    static bool isMouseDown = false;
+    static Transform MovingTarget;
+
     Vector3 oldLocalPos;
     Vector3 beginDragPos;
     bool onMoving = false;
 
-    static bool anyPieceIsMoving = false;
-    static Transform MovingTarget;
+    //點選後移動
+    void OnMouseDown()
+    {
+        isMouseDown = true;
+        StartMoving();
+    }
+    void OnMouseDrag() { MovingPiece(); }
+    void OnMouseUp()
+    {
+        isMouseDown = false;
+        StopMoving();
+    }
+
+    // 改善從口袋滑出拼圖的手感
+    // 沒點中拼圖，但滑過拼圖，還是可以接動
+    void OnMouseOver()
+    {
+        if (!isMouseDown)
+            return;
+
+        // 已經在moving其他的拼圖
+        if (PuzzlePiece.MovingTarget)
+            return;
+
+        StartMoving();
+    }
+    private void Update()
+    {
+        Debug.DrawLine(transform.position, transform.position + hHeight * Vector3.up, Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
+
+        isMouseDown = Input.GetMouseButton(0);
+
+        if (onMoving)
+        {
+            if (isMouseDown)
+                MovingPiece();
+            else
+                StopMoving();
+        }
+    }
+
+
     public ConnectedSet connectedSet; // 已經和別的piece相連成connectedSet，就會指向該塊connectedSet
 
     void StartMoving()
     {
         onMoving = true;
-        PuzzlePiece.anyPieceIsMoving = true;
-
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
 
@@ -215,7 +258,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         onMoving = false;
         var group = PuzzlePieceGroup.Instance;
-        PuzzlePiece.anyPieceIsMoving = false;
+        PuzzlePiece.MovingTarget = null;
         if (inPocket)
         {
             var pocket = PuzzlePiecePocket.Instance;
@@ -229,49 +272,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 transform.parent = group.transform;//放回group
 
             AfterMoving();
-        }
-    }
-
-    static bool isMouseDown = false;
-    //點選後移動
-    void OnMouseDown()
-    {
-        isMouseDown = true;
-        StartMoving();
-    }
-    void OnMouseDrag() { MovingPiece(); }
-    void OnMouseUp()
-    {
-        isMouseDown = false;
-        StopMoving();
-    }
-
-    // 改善從口袋滑出拼圖的手感
-    // 沒點中拼圖，但滑過拼圖，還是可以接動
-    void OnMouseOver()
-    {
-        if (!isMouseDown)
-            return;
-
-        // 已經在moving其他的拼圖
-        if (PuzzlePiece.anyPieceIsMoving)
-            return;
-
-        StartMoving();
-    }
-    private void Update()
-    {
-        Debug.DrawLine(transform.position, transform.position + hHeight * Vector3.up, Color.yellow);
-        Debug.DrawLine(transform.position, transform.position + hWidth * Vector3.left, Color.yellow);
-
-        isMouseDown = Input.GetMouseButton(0);
-
-        if (onMoving)
-        {
-            if (isMouseDown)
-                MovingPiece();
-            else
-                StopMoving();
         }
     }
 

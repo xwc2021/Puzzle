@@ -141,11 +141,11 @@ public class LayerMananger
             var p = theChosenOne as PuzzlePiece;
 
             //建立connectedSet，並把其他piece都加進來
-            var cs = group.CreateConnectedSet(p);
+            var cs = group.createConnectedSet(p);
             for (var i = layers.Count - 1; i >= 0; --i) //從最上層開始
             {
                 var L = layers[i];
-                cs.Add(L as PuzzlePiece);
+                cs.add(L as PuzzlePiece);
                 layerManager.remove(L);
             }
 
@@ -161,13 +161,13 @@ public class LayerMananger
 
             if (L.GetPiecesCount() == 1)
             {
-                nowCS.Add(L as PuzzlePiece);
+                nowCS.add(L as PuzzlePiece);
                 layerManager.remove(L);
             }
             else
             {
                 var cs = L as ConnectedSet;
-                nowCS.Add(cs);
+                nowCS.add(cs);
                 layerManager.remove(L);
                 Object.Destroy(cs.gameObject);//刪除connectedSet
             }

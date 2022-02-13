@@ -36,7 +36,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
     public void BeforeMoving()
     {
         foreach (var p in pieces)
-            PuzzlePieceGroup.Instance.RemoveFromBucket(p);
+            PuzzlePieceGroup.Instance.removeFromBucket(p);
     }
 
     static int bucketOffsetX;
@@ -49,10 +49,10 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         var worldPos = pieceForAlign.transform.position;
         var localPosInGroup = group.transform.InverseTransformPoint(worldPos);
         int x, y;
-        group.GetAlignCell(localPosInGroup, out x, out y);
+        group.getAlignCell(localPosInGroup, out x, out y);
 
         // (1)pos重新對齊Cell
-        var diff = group.GetDiffAlightPieceToCell(localPosInGroup, x, y);
+        var diff = group.getDiffAlightPieceToCell(localPosInGroup, x, y);
         transform.localPosition += diff;
 
         //因為ConnectedSet不一定會剛好和Group對齊
@@ -67,15 +67,15 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
             var targetY = p.yIndexInFull + bucketOffsetY;
 
             if (group.IsValidIndex(targetX, targetY))
-                group.InjectToBucket(p, targetX, targetY);
+                group.injectToBucket(p, targetX, targetY);
         }
 
         //(3)找出可以相連的Layer
-        FindConnectLayerAndMerge(x, y);
+        findConnectLayerAndMerge(x, y);
     }
 
     /* 合併相關 */
-    void FindConnectLayerAndMerge(int x, int y)
+    void findConnectLayerAndMerge(int x, int y)
     {
         var group = PuzzlePieceGroup.Instance;
         var set = new HashSet<IPuzzleLayer>();
@@ -106,15 +106,15 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         LayerMananger.GetInstance().merge(set, group);
     }
 
-    public void Add(ConnectedSet target)
+    public void add(ConnectedSet target)
     {
         foreach (var p in target.pieces)
-            Add(p);
+            add(p);
 
         target.pieces.Clear();
     }
 
-    public void Add(PuzzlePiece p)
+    public void add(PuzzlePiece p)
     {
         pieces.Add(p);
         p.connectedSet = this;

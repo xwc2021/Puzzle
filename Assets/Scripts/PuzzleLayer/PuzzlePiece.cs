@@ -99,18 +99,19 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     Vector3 oldLocalPos;
     Vector3 beginDragPos;
     bool onMoving = false;
+    public ConnectedSet connectedSet; // 已經和別的piece相連成connectedSet，就會指向該塊connectedSet
 
     //點選後移動
     void OnMouseDown()
     {
         isMouseDown = true;
-        StartMoving();
+        startMoving();
     }
-    void OnMouseDrag() { MovingPiece(); }
+    void OnMouseDrag() { movingPiece(); }
     void OnMouseUp()
     {
         isMouseDown = false;
-        StopMoving();
+        stopMoving();
     }
 
     // 改善從口袋滑出拼圖的手感
@@ -124,7 +125,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         if (PuzzlePiece.MovingTarget)
             return;
 
-        StartMoving();
+        startMoving();
     }
     private void Update()
     {
@@ -136,25 +137,24 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         if (onMoving)
         {
             if (isMouseDown)
-                MovingPiece();
+                movingPiece();
             else
-                StopMoving();
+                stopMoving();
         }
     }
 
-
-    public ConnectedSet connectedSet; // 已經和別的piece相連成connectedSet，就會指向該塊connectedSet
-
-    void StartMoving()
+    void startMoving()
     {
-        onMoving = true;
+        BeforeMoving();
+
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
 
-        BeforeMoving();
-
+        // 記下位置
         oldLocalPos = MovingTarget.localPosition;
         beginDragPos = Input.mousePosition;
+
+        onMoving = true;
     }
 
     public void BeforeMoving()
@@ -164,7 +164,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         else
         {
             // 從Bucket裡清除
-            PuzzlePieceGroup.Instance.RemoveFromBucket(this);
+            PuzzlePieceGroup.Instance.removeFromBucket(this);
 
             // 放到最上面，並從Layer移除
             if (layerIndex != Tool.NullIndex)
@@ -176,62 +176,34 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
     }
 
-    public void AfterMoving()
+    Vector3 screenVectorToWorld(Vector3 v)
     {
-        if (connectedSet != null)
-        {
-            connectedSet.AfterMoving();
-        }
-        else
-        {
-            //取得所在Cell
-            int x, y;
-            var group = PuzzlePieceGroup.Instance;
-            group.GetAlignCell(transform.localPosition, out x, out y);
-
-            //(1)pos重新對齊Cell
-            group.AlightPieceToCell(this, x, y);
-
-            //(2)更新位在那一個Bucket
-            group.InjectToBucket(this, x, y);
-
-            //還不屬於Layer
-            if (GetLayerIndex() == Tool.NullIndex)
-                LayerMananger.GetInstance().add(this);
-
-            //(3)找出可以相連的Layer
-            FindConnectLayerAndMerge(x, y);
-        }
-    }
-
-    Vector3 ScreenVectorToWorld(Vector3 v)
-    {
-        //1個ScreenAdapter.UnitSize就是Screen.height
+        // 1 Screen.height = 1 ScreenAdapter.UnitSquareSize
         v = v / Screen.height;
         v = v * ScreenAdapter.UnitSquareSize;
         return v;
     }
 
-    void MovingPiece()
+    void movingPiece()
     {
         //https://docs.unity3d.com/ScriptReference/Input-mousePosition.html
         //這裡是Sreen的delta
         var delta = (Input.mousePosition - beginDragPos);
-        delta = ScreenVectorToWorld(delta);
+        delta = screenVectorToWorld(delta);
 
         var localDelta = GetParentTransform().InverseTransformVector(delta);
         MovingTarget.localPosition = oldLocalPos + localDelta;
 
         var pocket = PuzzlePiecePocket.Instance;
         var nowX = transform.position.x;
-        if (nowX < pocket.GetBorder()) // 臨界點
+        if (nowX < pocket.GetBorder()) // group區
         {
             if (inPocket)
                 pocket.removeFromPocket(this);
         }
-        else
+        else // Pocket區
         {
-            //已經拼好的，就不能放回口袋
+            // 已經拼好的，就不能放回口袋
             if (connectedSet != null)
                 return;
 
@@ -241,11 +213,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             var localZ = pos.z;
 
             var nowIndex = pocket.getInsertIndex(localZ, inPocket);
-            //print(nowIndex);
-            if (!inPocket)//不在口袋裡，就加進去
-            {
+            if (!inPocket) // 不在口袋裡，就加進去
                 pocket.addToPocket(nowIndex, this, false);
-            }
             else
             {
                 if (nowIndexInPocket != nowIndex)
@@ -254,30 +223,56 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
     }
 
-    void StopMoving()
+    void stopMoving()
     {
         onMoving = false;
-        var group = PuzzlePieceGroup.Instance;
         PuzzlePiece.MovingTarget = null;
-        if (inPocket)
+        if (inPocket) // 進口袋
         {
             var pocket = PuzzlePiecePocket.Instance;
             transform.parent = pocket.transform;
-            pocket.refreshPocket();//口袋重新對齊
-            group.RemoveFromBucket(this);//從桶子中移掉
+            pocket.refreshPocket();
+            PuzzlePieceGroup.Instance.removeFromBucket(this);
         }
         else
         {
             if (connectedSet == null)
-                transform.parent = group.transform;//放回group
+                transform.parent = PuzzlePieceGroup.Instance.transform;
 
             AfterMoving();
         }
     }
 
-    /* 合併相關 */
+    public void AfterMoving()
+    {
+        if (connectedSet != null)
+        {
+            connectedSet.AfterMoving();
+        }
+        else
+        {
+            // 取得所在Cell
+            int x, y;
+            var group = PuzzlePieceGroup.Instance;
+            group.getAlignCell(transform.localPosition, out x, out y);
 
-    void FindConnectLayerAndMerge(int x, int y)
+            // (1)pos重新對齊Cell
+            group.snapPieceToCell(this, x, y);
+
+            // (2)更新位在那一個Bucket
+            group.injectToBucket(this, x, y);
+
+            // (3)設為Layer
+            if (GetLayerIndex() == Tool.NullIndex)
+                LayerMananger.GetInstance().add(this);
+
+            // (4)找出可以相連的Layer
+            findConnectLayerAndMerge(x, y);
+        }
+    }
+
+    /* 合併相關 */
+    void findConnectLayerAndMerge(int x, int y)
     {
         var set = new HashSet<IPuzzleLayer>();
         FindConnectLayer(x, y, set);
@@ -301,7 +296,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             var offset = NeighborOffset[i];
             var offsetX = (int)offset.x;
             var offsetY = (int)offset.y;
-            var Pieces = PuzzlePieceGroup.Instance.GetBucketPieces(x + offsetX, y + offsetY);
+            var Pieces = PuzzlePieceGroup.Instance.getBucketPieces(x + offsetX, y + offsetY);
             if (Pieces == null)
                 continue;
 

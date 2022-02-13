@@ -167,7 +167,7 @@ public class PuzzlePieceGroup : MonoBehaviour
             pieceRealCenter[i] = map1D[i].transform.localPosition;
     }
 
-    public void SouffleToPocket(int W, int H, PuzzlePiecePocket puzzlePiecePocket)
+    public void souffleToPocket(int W, int H, PuzzlePiecePocket puzzlePiecePocket)
     {
         var count = W * H * pieceCount;
         var indexList = new List<int>();
@@ -192,7 +192,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     /* Bucket相關 */
     // 桶子可以接水，這裡的桶子是用來裝拼圖(空間索引)
     PuzzleBucket[] bucketCells;
-    public void InitBucket(int W, int H)
+    public void initBucket(int W, int H)
     {
         var count = W * H * pieceCount;
         bucketCells = new PuzzleBucket[count];
@@ -201,7 +201,7 @@ public class PuzzlePieceGroup : MonoBehaviour
             bucketCells[i] = new PuzzleBucket();
     }
 
-    public void InjectToBucket(PuzzlePiece p, int xIndex, int yIndex)
+    public void injectToBucket(PuzzlePiece p, int xIndex, int yIndex)
     {
         //放到桶子裡
         var i = GetIndex1D(xIndex, yIndex);
@@ -209,7 +209,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         bucketCells[i].Add(p);
     }
 
-    public void RemoveFromBucket(PuzzlePiece p)
+    public void removeFromBucket(PuzzlePiece p)
     {
         if (p.bucketIndex == Tool.NullIndex)
             return;
@@ -218,7 +218,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         p.bucketIndex = Tool.NullIndex;
     }
 
-    public PuzzlePiece[] GetBucketPieces(int column, int row)
+    public PuzzlePiece[] getBucketPieces(int column, int row)
     {
         if (!IsValidIndex(column, row))
             return null;
@@ -228,7 +228,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     }
 
     /* Cell相關 */
-    public void GetAlignCell(Vector3 localPos, out int xIndex, out int yIndex)
+    public void getAlignCell(Vector3 localPos, out int xIndex, out int yIndex)
     {
         //找出xIndex,zIndex
         float x = localPos.x;
@@ -241,7 +241,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         //print(xIndex + "," + zIndex);
     }
 
-    public void AlightPieceToCell(PuzzlePiece piece, int xIndex, int yIndex)
+    public void snapPieceToCell(PuzzlePiece piece, int xIndex, int yIndex)
     {
         var newIndex = GetIndex1D(xIndex, yIndex);
 
@@ -249,7 +249,7 @@ public class PuzzlePieceGroup : MonoBehaviour
         piece.transform.localPosition = pieceRealCenter[newIndex];
     }
 
-    public Vector3 GetDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
+    public Vector3 getDiffAlightPieceToCell(Vector3 localPos, int xIndex, int yIndex)
     {
         var newIndex = GetIndex1D(xIndex, yIndex);
         return pieceRealCenter[newIndex] - localPos;
@@ -259,7 +259,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     [SerializeField]
     ConnectedSet templateConnectedSet;
 
-    public ConnectedSet CreateConnectedSet(PuzzlePiece p)
+    public ConnectedSet createConnectedSet(PuzzlePiece p)
     {
         // 找出目前所在的Cell和原始的Cell的diff
         // todo: 每個Cell的中心點不是在正中心

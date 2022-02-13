@@ -10,8 +10,6 @@ public class PuzzlePieceGroup : MonoBehaviour
     const int rowCount = 4;
     const int columnCount = 6;
 
-    public PuzzlePiece nowMovingPiece;
-
     /* 索引Tool相關*/
 
     int GetIndex1D(int column, int row)

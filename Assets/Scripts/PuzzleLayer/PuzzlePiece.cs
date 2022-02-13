@@ -96,8 +96,23 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     Vector3 beginDragPos;
     bool onMoving = false;
 
+    static bool anyPieceIsMoving = false;
     static Transform MovingTarget;
     public ConnectedSet connectedSet; // 已經和別的piece相連成connectedSet，就會指向該塊connectedSet
+
+    void StartMoving()
+    {
+        onMoving = true;
+        PuzzlePiece.anyPieceIsMoving = true;
+
+        MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
+        ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
+
+        BeforeMoving();
+
+        oldLocalPos = MovingTarget.localPosition;
+        beginDragPos = Input.mousePosition;
+    }
 
     public void BeforeMoving()
     {
@@ -105,17 +120,16 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             connectedSet.BeforeMoving();
         else
         {
-            //從Bucket裡清除
+            // 從Bucket裡清除
             PuzzlePieceGroup.Instance.RemoveFromBucket(this);
 
-            //從Layer移除：這樣才能放到最上面
+            // 放到最上面，並從Layer移除
             if (layerIndex != Tool.NullIndex)
             {
                 var instance = LayerMananger.GetInstance();
                 instance.moveToTop(this);
                 instance.remove(this);
             }
-
         }
     }
 
@@ -145,20 +159,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             //(3)找出可以相連的Layer
             FindConnectLayerAndMerge(x, y);
         }
-    }
-
-    void StartMoving()
-    {
-        onMoving = true;
-        PuzzlePieceGroup.Instance.nowMovingPiece = this;
-
-        MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
-        ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
-
-        BeforeMoving();
-
-        oldLocalPos = MovingTarget.localPosition;
-        beginDragPos = Input.mousePosition;
     }
 
     Vector3 ScreenVectorToWorld(Vector3 v)
@@ -215,7 +215,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         onMoving = false;
         var group = PuzzlePieceGroup.Instance;
-        group.nowMovingPiece = null;
+        PuzzlePiece.anyPieceIsMoving = false;
         if (inPocket)
         {
             var pocket = PuzzlePiecePocket.Instance;
@@ -246,17 +246,15 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         StopMoving();
     }
 
-    //改善從口袋滑出拼圖的手感
+    // 改善從口袋滑出拼圖的手感
+    // 沒點中拼圖，但滑過拼圖，還是可以接動
     void OnMouseOver()
     {
-        if (!isMouseDown)//有點擊才發動
+        if (!isMouseDown)
             return;
 
-        //已經在moving其他的拼圖
-        if (PuzzlePieceGroup.Instance.nowMovingPiece != null)
-            return;
-
-        if (onMoving)
+        // 已經在moving其他的拼圖
+        if (PuzzlePiece.anyPieceIsMoving)
             return;
 
         StartMoving();

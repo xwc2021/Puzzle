@@ -43,18 +43,26 @@ public class LayerMananger
         refreshLayerDepth();
     }
 
-    public void update(IPuzzleLayer layer)
+    public void update(IPuzzleLayer layer, bool downToUp = true)
     {
         var i = layer.GetLayerIndex();
         layers.RemoveAt(i);
 
         // 從下往上插入會比較快
-        dowToUpInsert(layer);
+        if (downToUp)
+            downToUpInsert(layer);
+        else
+            upToDownInsert(layer);
 
         refreshLayerDepth();
     }
 
-    void dowToUpInsert(IPuzzleLayer layer)
+    public void moveToTop(IPuzzleLayer layer)
+    {
+        update(layer, false);
+    }
+
+    void downToUpInsert(IPuzzleLayer layer)
     {
         for (var i = 0; i < layers.Count; ++i)
         {
@@ -92,16 +100,16 @@ public class LayerMananger
     public void refreshLayerDepth()
     {
         //Debug.Log("Layer count=" + layers.Count);
-        var nowY = 0.0f;
+        float depth_start = 0.0f;
         for (var i = 0; i < layers.Count; ++i)
         {
             var layer = layers[i];
             layer.SetLayerIndex(i);
             var t = layer.GetTransform();
             var pos = t.localPosition;
-            t.localPosition = new Vector3(pos.x, nowY, pos.z);
+            t.localPosition = new Vector3(pos.x, depth_start, pos.z);
 
-            nowY += layerDepthOffset;
+            depth_start += layerDepthOffset;
         }
     }
 

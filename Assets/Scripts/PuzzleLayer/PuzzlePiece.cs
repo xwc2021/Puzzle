@@ -17,7 +17,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     Transform GetParentTransform()
     {
-        //不管現在的paretn是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
+        //不管現在的parent是Pocket、Group、ConnectedSet都沒差(反正它們軸向都一樣)
         return transform.parent;
     }
 
@@ -97,6 +97,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     bool onMoving = false;
 
     static Transform MovingTarget;
+    public ConnectedSet connectedSet; // 已經和別的piece相連成connectedSet，就會指向該塊connectedSet
 
     public void BeforeMoving()
     {
@@ -109,7 +110,12 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
             //從Layer移除：這樣才能放到最上面
             if (layerIndex != Tool.NullIndex)
-                LayerMananger.GetInstance().remove(this);
+            {
+                var instance = LayerMananger.GetInstance();
+                instance.moveToTop(this);
+                instance.remove(this);
+            }
+
         }
     }
 
@@ -149,10 +155,10 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
 
+        BeforeMoving();
+
         oldLocalPos = MovingTarget.localPosition;
         beginDragPos = Input.mousePosition;
-
-        BeforeMoving();
     }
 
     Vector3 ScreenVectorToWorld(Vector3 v)
@@ -272,7 +278,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     }
 
     /* 合併相關 */
-    public ConnectedSet connectedSet;
 
     void FindConnectLayerAndMerge(int x, int y)
     {

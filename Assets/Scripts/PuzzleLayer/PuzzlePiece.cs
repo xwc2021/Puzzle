@@ -227,7 +227,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         onMoving = false;
         PuzzlePiece.MovingTarget = null;
-        if (inPocket) // 進口袋
+        if (inPocket) // 口袋區
         {
             var pocket = PuzzlePiecePocket.Instance;
             transform.parent = pocket.transform;
@@ -275,7 +275,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void findConnectLayerAndMerge(int x, int y)
     {
         var set = new HashSet<IPuzzleLayer>();
-        FindConnectLayer(x, y, set);
+        findConnectLayer(x, y, set);
 
         //沒有找到任何相鄰Layer
         if (set.Count == 0)
@@ -289,7 +289,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         LayerMananger.GetInstance().merge(set, PuzzlePieceGroup.Instance);
     }
 
-    public void FindConnectLayer(int x, int y, HashSet<IPuzzleLayer> set)
+    public void findConnectLayer(int x, int y, HashSet<IPuzzleLayer> set)
     {
         for (var i = 0; i < NeighborOffset.Length; ++i)
         {

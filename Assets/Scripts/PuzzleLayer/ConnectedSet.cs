@@ -55,12 +55,12 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
         var diff = group.getDiffAlightPieceToCell(localPosInGroup, x, y);
         transform.localPosition += diff;
 
-        //因為ConnectedSet不一定會剛好和Group對齊
-        //所以要使用Offset來修正
+        // 因為ConnectedSet不一定會剛好和Group對齊
+        // 找出相差多少Offset
         bucketOffsetX = x - pieceForAlign.xIndexInFull;
         bucketOffsetY = y - pieceForAlign.yIndexInFull;
 
-        //(2)所有Piece更新位在那一個Bucket
+        // (2)所有Piece更新位在那一個Bucket
         foreach (var p in pieces)
         {
             var targetX = p.xIndexInFull + bucketOffsetX;
@@ -70,7 +70,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
                 group.injectToBucket(p, targetX, targetY);
         }
 
-        //(3)找出可以相連的Layer
+        // (3)找出可以相連的Layer
         findConnectLayerAndMerge(x, y);
     }
 
@@ -88,10 +88,10 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
                 var targetY = p.yIndexInFull + bucketOffsetY;
 
                 if (group.IsValidIndex(targetX, targetY))
-                    p.FindConnectLayer(targetX, targetY, set);
+                    p.findConnectLayer(targetX, targetY, set);
             }
             else
-                p.FindConnectLayer(x, y, set);
+                p.findConnectLayer(x, y, set);
         }
 
         //沒有找到任何相鄰Layer

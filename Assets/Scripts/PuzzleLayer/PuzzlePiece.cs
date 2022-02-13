@@ -107,15 +107,14 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         isMouseDown = true;
         startMoving();
     }
-    void OnMouseDrag() { movingPiece(); }
+    void OnMouseDrag() { movingPiece(); } // 點擊拉動
     void OnMouseUp()
     {
         isMouseDown = false;
         stopMoving();
     }
 
-    // 改善從口袋滑出拼圖的手感
-    // 沒點中拼圖，但滑過拼圖，還是可以接動
+    // 沒點中拼圖，但之後滑過拼圖
     void OnMouseOver()
     {
         if (!isMouseDown)
@@ -137,7 +136,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         if (onMoving)
         {
             if (isMouseDown)
-                movingPiece();
+                movingPiece(); // 給上面的OnMouseOver使用
             else
                 stopMoving();
         }

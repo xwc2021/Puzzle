@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // 單塊拚圖
@@ -276,15 +275,15 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         var set = new HashSet<IPuzzleLayer>();
         findConnectLayer(x, y, set);
 
-        //沒有找到任何相鄰Layer
+        // 沒有找到任何相鄰Layer
         if (set.Count == 0)
         {
             LayerMananger.GetInstance().refreshLayerDepth();
             return;
         }
 
-        //Merge Layer
-        set.Add(this);//把自己也加進去
+        // Merge Layer
+        set.Add(this); // 把自己也加進去
         LayerMananger.GetInstance().merge(set, PuzzlePieceGroup.Instance);
     }
 
@@ -304,13 +303,12 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
                 var p = Pieces[k];
                 if (IsMyNeighbor(offsetX, offsetY, p))//找到相鄰的了
                 {
-                    //已經相接在一起，就跳過
-                    if (p.connectedSet == connectedSet && connectedSet != null)
+                    // 已經相接在一起，就跳過
+                    if (connectedSet != null && p.connectedSet == connectedSet)
                         continue;
 
                     var findOne = (p.connectedSet == null) ? p as IPuzzleLayer : p.connectedSet as IPuzzleLayer;
-
-                    if (!set.Contains(findOne))//有可能findOne已經在set裡了
+                    if (!set.Contains(findOne)) // 有可能findOne已經在set裡了
                         set.Add(findOne);
 
                     break;

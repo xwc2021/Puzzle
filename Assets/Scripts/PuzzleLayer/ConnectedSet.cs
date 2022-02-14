@@ -94,7 +94,7 @@ public class ConnectedSet : MonoBehaviour, IPuzzleLayer
                 p.findConnectLayer(x, y, set);
         }
 
-        //沒有找到任何相鄰Layer
+        // 沒有找到任何相鄰Layer
         if (set.Count == 0)
         {
             LayerMananger.GetInstance().refreshLayerDepth();

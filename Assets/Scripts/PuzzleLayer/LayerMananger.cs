@@ -115,32 +115,32 @@ public class LayerMananger
 
     public void merge(HashSet<IPuzzleLayer> set, PuzzlePieceGroup group)
     {
-        //找出含有最多piece的Layer，把所有piece都給它
+        var layerManager = LayerMananger.GetInstance();
         var layers = new List<IPuzzleLayer>(set);
 
-        //print("before sort");
-        //foreach (var e in layers)
-        //    print(e.GetLayerIndex());
+        // print("before sort");
+        // foreach (var e in layers)
+        //     print(e.GetLayerIndex());
 
-        //從depth小排到大
+        // 從depth小排到大
         layers.Sort((a, b) =>
         {
             return a.GetLayerIndex() - b.GetLayerIndex();
         });
 
-        //print("after sort");
-        //foreach (var e in layers)
-        //    print(e.GetLayerIndex());
+        // print("after sort");
+        // foreach (var e in layers)
+        //     print(e.GetLayerIndex());
 
+        // 取出含有最多piece的Layer，把所有piece都給它
         var theChosenOne = layers[0];
-        var layerManager = LayerMananger.GetInstance();
 
-        //全部都是piece
+        // 全部set都只有1塊piece
         if (theChosenOne.GetPiecesCount() == 1)
         {
             var p = theChosenOne as PuzzlePiece;
 
-            //建立connectedSet，並把其他piece都加進來
+            // 建立connectedSet，全部piece都加進來
             var cs = group.createConnectedSet(p);
             for (var i = layers.Count - 1; i >= 0; --i) //從最上層開始
             {
@@ -154,7 +154,7 @@ public class LayerMananger
         }
 
         var nowCS = theChosenOne as ConnectedSet;
-        //把其他Layer裡的piece加到擁有最多piece的那個Layer
+        // 把其他piece都加進來
         for (var i = layers.Count - 1; i >= 1; --i) //從最上層開始
         {
             var L = layers[i];

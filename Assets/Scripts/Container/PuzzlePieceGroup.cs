@@ -262,7 +262,7 @@ public class PuzzlePieceGroup : MonoBehaviour
     public ConnectedSet createConnectedSet(PuzzlePiece p)
     {
         // 找出目前所在的Cell和原始的Cell的diff
-        // todo: 每個Cell的中心點不是在正中心
+        // 注意: ConnectedSet不會完全和Cell對齊，會差一點點
         var diff = pieceRealCenter[p.bucketIndex] - pieceRealCenter[p.index1DInFull];
 
         var cs = GameObject.Instantiate<ConnectedSet>(templateConnectedSet);

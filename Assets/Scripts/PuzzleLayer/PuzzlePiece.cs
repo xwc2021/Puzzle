@@ -143,10 +143,9 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     void startMoving()
     {
-        BeforeMoving();
-
-        MovingTarget = (connectedSet != null) ? connectedSet : this as IPuzzleLayer;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
+        MovingTarget = (connectedSet != null) ? connectedSet : this as IPuzzleLayer;
+        MovingTarget.BeforeMoving();
 
         // 記下位置
         oldLocalPos = MovingTarget.GetTransform().localPosition;
@@ -157,21 +156,15 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     public void BeforeMoving()
     {
-        MovingTarget.BeforeMoving();
-        if (connectedSet != null)
-            connectedSet.BeforeMoving();
-        else
-        {
-            // 從Bucket裡清除
-            PuzzlePieceGroup.Instance.removeFromBucket(this);
+        // 從Bucket裡清除
+        PuzzlePieceGroup.Instance.removeFromBucket(this);
 
-            // 放到最上面，並從Layer移除
-            if (layerIndex != Tool.NullIndex)
-            {
-                var instance = LayerMananger.GetInstance();
-                instance.moveToTop(this);
-                instance.remove(this);
-            }
+        // 放到最上面，並從Layer移除
+        if (layerIndex != Tool.NullIndex)
+        {
+            var instance = LayerMananger.GetInstance();
+            instance.moveToTop(this);
+            instance.remove(this);
         }
     }
 
@@ -224,8 +217,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     void stopMoving()
     {
-        onMoving = false;
-        MovingTarget = null;
         if (inPocket) // 口袋區
         {
             var pocket = PuzzlePiecePocket.Instance;
@@ -234,39 +225,33 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             PuzzlePieceGroup.Instance.removeFromBucket(this);
         }
         else
-        {
-            AfterMoving();
-        }
+            MovingTarget.AfterMoving();
+
+        MovingTarget = null;
+        onMoving = false;
     }
 
     public void AfterMoving()
     {
-        if (connectedSet != null)
-        {
-            connectedSet.AfterMoving();
-        }
-        else
-        {
-            transform.parent = PuzzlePieceGroup.Instance.transform;
+        transform.parent = PuzzlePieceGroup.Instance.transform;
 
-            // 取得所在Cell
-            int x, y;
-            var group = PuzzlePieceGroup.Instance;
-            group.getAlignCell(transform.localPosition, out x, out y);
+        // 取得所在Cell
+        int x, y;
+        var group = PuzzlePieceGroup.Instance;
+        group.getAlignCell(transform.localPosition, out x, out y);
 
-            // (1)pos重新對齊Cell
-            group.snapPieceToCell(this, x, y);
+        // (1)pos重新對齊Cell
+        group.snapPieceToCell(this, x, y);
 
-            // (2)更新位在那一個Bucket
-            group.injectToBucket(this, x, y);
+        // (2)更新位在那一個Bucket
+        group.injectToBucket(this, x, y);
 
-            // (3)設為Layer
-            if (GetLayerIndex() == Tool.NullIndex)
-                LayerMananger.GetInstance().add(this);
+        // (3)設為Layer
+        if (GetLayerIndex() == Tool.NullIndex)
+            LayerMananger.GetInstance().add(this);
 
-            // (4)找出可以相連的Layer
-            findConnectLayerAndMerge(x, y);
-        }
+        // (4)找出可以相連的Layer
+        findConnectLayerAndMerge(x, y);
     }
 
     /* 合併相關 */

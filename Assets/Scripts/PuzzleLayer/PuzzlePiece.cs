@@ -93,7 +93,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     /* Drag相關 */
 
     static bool isMouseDown = false;
-    static Transform MovingTarget;
+    static IPuzzleLayer MovingTarget = null;
 
     Vector3 oldLocalPos;
     Vector3 beginDragPos;
@@ -120,7 +120,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
             return;
 
         // 已經在moving其他的拼圖
-        if (PuzzlePiece.MovingTarget)
+        if (MovingTarget != null)
             return;
 
         startMoving();
@@ -145,11 +145,11 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     {
         BeforeMoving();
 
-        MovingTarget = (connectedSet == null) ? transform : connectedSet.transform;
+        MovingTarget = (connectedSet != null) ? connectedSet : this as IPuzzleLayer;
         ConnectedSet.pieceForAlign = (connectedSet == null) ? null : this;
 
         // 記下位置
-        oldLocalPos = MovingTarget.localPosition;
+        oldLocalPos = MovingTarget.GetTransform().localPosition;
         beginDragPos = Input.mousePosition;
 
         onMoving = true;
@@ -157,6 +157,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
 
     public void BeforeMoving()
     {
+        MovingTarget.BeforeMoving();
         if (connectedSet != null)
             connectedSet.BeforeMoving();
         else
@@ -190,7 +191,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         delta = screenVectorToWorld(delta);
 
         var localDelta = GetParentTransform().InverseTransformVector(delta);
-        MovingTarget.localPosition = oldLocalPos + localDelta;
+        MovingTarget.GetTransform().localPosition = oldLocalPos + localDelta;
 
         var pocket = PuzzlePiecePocket.Instance;
         var nowX = transform.position.x;
@@ -224,7 +225,7 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
     void stopMoving()
     {
         onMoving = false;
-        PuzzlePiece.MovingTarget = null;
+        MovingTarget = null;
         if (inPocket) // 口袋區
         {
             var pocket = PuzzlePiecePocket.Instance;
@@ -234,9 +235,6 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
         else
         {
-            if (connectedSet == null)
-                transform.parent = PuzzlePieceGroup.Instance.transform;
-
             AfterMoving();
         }
     }
@@ -249,6 +247,8 @@ public class PuzzlePiece : MonoBehaviour, IPuzzleLayer
         }
         else
         {
+            transform.parent = PuzzlePieceGroup.Instance.transform;
+
             // 取得所在Cell
             int x, y;
             var group = PuzzlePieceGroup.Instance;

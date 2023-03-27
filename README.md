@@ -6,5 +6,6 @@ use url to create Puzzle Game
 終於把4年前的code整理完了  
 就用鬍子小雞結束這1回合吧
 
-![image](https://lh3.googleusercontent.com/pw/AM-JKLV-KitL-OAxapRD8bfJ63k7pETi4l_dd9D2UMUDFeBWjmnAecB8Nm-agw50A57eWvcaJX0xBb_RAW-zHHFZcbTcu7lXOyUqsIAV_PYjcj11Ts7ms5qTfxgUPGN7lbxs9QHwOKskUVPufpLRoIEQ7LeKqA=w658-h409-no?authuser=0)
+![胡子小雞](https://user-images.githubusercontent.com/11153808/227838646-ef8f6039-5d80-456d-8c9c-3db843aeb4de.jpg)
+
 
